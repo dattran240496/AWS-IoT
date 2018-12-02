@@ -1,0 +1,3 @@
+rootProject.name = 'demoAWS'
+
+include ':app'
