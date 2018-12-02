@@ -1,5 +1,5 @@
 # AWS-IoT
-Steps to run app (running these command on terminal or command prompt)
+Steps to run app (running these commands on terminal or command prompt)
 1. npm install
 2. yarn start
 3. Run app
