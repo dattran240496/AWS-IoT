@@ -16,13 +16,12 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
   private var iot: AWSIoT!
   
   private var allSubscribedTopics = [String]()
-  
   override static func requiresMainQueueSetup() -> Bool {//This code is needed. don't remove
     return true
   }
   
   override func supportedEvents() -> [String]! {//These are the name of events that the react native will receive
-    return["connectionStatus","message"]
+    return ["connectionStatus","message"]
   }
   
   //Setup AWSIOT
@@ -43,8 +42,7 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
     AWSIoTDataManager.register(with: iotConfiguration!, forKey: "AWSIoTDataManager")
   
     iotDataManager = AWSIoTDataManager(forKey: "AWSIoTDataManager")
-    
-    allSubscribedTopics.removeAll()
+  
   }
   
   //Connect to AWSIOT using the ceritificate
@@ -162,19 +160,23 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
   }
   
   //Subscribe to a channel/topic
-  @objc func subscribeFromAwsMqtt(_ topic:String) {
+  @objc public func subscribeFromAwsMqtt(_ topic:String) {
     if (allSubscribedTopics.contains(topic) == false) {
       allSubscribedTopics.append(topic)
     }
-    iotDataManager.subscribe(toTopic: topic, qoS: .messageDeliveryAttemptedAtMostOnce, messageCallback: { (payload) ->Void in
+    iotDataManager.subscribe(toTopic: topic, qoS: .messageDeliveryAttemptedAtLeastOnce, messageCallback: { (payload) ->Void in
       let stringValue = NSString(data: payload, encoding: String.Encoding.utf8.rawValue)!
+      print(self.allSubscribedTopics)
       print(stringValue)
-      self.sendEvent(withName: "message", body: stringValue)
+      if (self.bridge != nil) {
+        self.sendEvent(withName: "message", body: stringValue)
+      }
+      
     } )
   }
   
   //Unsubscribe to a specific topic/channel
-  @objc func unsubscribeTopic(_ topic:String) {
+  @objc public func unsubscribeTopic(_ topic:String) {
     iotDataManager.unsubscribeTopic(topic)
     if let index = allSubscribedTopics.index(of: topic) {
       allSubscribedTopics.remove(at: index)
@@ -182,7 +184,7 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
   }
   
   //unsubscribe to all topics/channels
-  @objc func unsubscribeAllTopics() {
+  @objc public func unsubscribeAllTopics() {
     for topic in allSubscribedTopics {
       iotDataManager.unsubscribeTopic(topic)
     }
