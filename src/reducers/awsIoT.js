@@ -3,10 +3,10 @@ import {
     UPDATE_DEVICE_STATUS,
     UPDATE_AWS_STATUS, UPDATE_SWITCH_DEVICE_STATUS
 } from "../actions/type";
-import {deviceElements, deviceStatus} from "../constants/devices";
+import {deviceElements, deviceStatusDefault} from "../constants/devices";
 
 const initialState = {
-    deviceStatus: deviceStatus,
+    deviceStatus: deviceStatusDefault,
     devices: [],
     connected: false,
     switchStatus: false
@@ -24,7 +24,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 deviceStatus: {
-                    ...deviceStatus,
+                    ...state.deviceStatus,
                     ...action.params
                 }
             }

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, FlatList, StyleSheet, Text, TouchableOpacity} from 'react-native'
 import {} from "../../constants/devices"
-import {devices} from "../../constants/devices";
+import {allRoom} from "../../constants/devices";
 import {connect} from 'react-redux'
 import {changeRoomRequest} from '../../actions/sideMenu'
 import navigator from '../../navigators/CustomNavigator'
@@ -35,7 +35,7 @@ class SideMenu extends React.Component {
         return (
             <View style={styles.container}>
                 <FlatList renderItem={({item, index}) => this._renderItems(item, index)}
-                          data={Object.values(devices)}
+                          data={Object.values(allRoom)}
                           keyExtractor={(item, index) => item.id}/>
             </View>
         )
