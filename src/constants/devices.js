@@ -15,40 +15,56 @@ export const allRoom = {
     switch: {
         id: "switch",
         name: "Switch",
+        iconName: 'torii-gate',
+        iconColor: 'brown'
     },
     gateway: {
         id: 'gateway',
-        name: 'Gateway'
+        name: 'Gateway',
+        iconName: 'torii-gate',
+        iconColor: 'brown'
     },
     garage: {
         id: 'garage',
-        name: 'Garage'
+        name: 'Garage',
+        iconName: 'warehouse',
+        iconColor: '#e1e1e1'
     },
     living_room: {
         id: 'living_room',
-        name: "Living Room"
+        name: "Living Room",
+        iconName: 'couch',
+        iconColor: '#2CB766'
     },
     kitchen: {
         id: 'kitchen',
-        name: 'Kitchen'
+        name: 'Kitchen',
+        iconName: 'utensils',
+        iconColor: '#C0C0C0'
     },
     wc: {
         id: 'wc',
-        name: 'WC'
+        name: 'WC',
+        iconName: 'toilet',
+        iconColor: 'yellow'
     },
     yard: {
         id: 'yard',
-        name: 'Yard'
+        name: 'Yard',
+        iconName: 'cloud-shower-heavy',
+        iconColor: 'blue'
     },
     bed_room: {
         id: 'bed_room',
-        name: 'Bed Room'
+        name: 'Bed Room',
+        iconName: 'bed',
+        iconColor: '#4272B2'
     }
 
 };
 
 export const deviceStatusDefault = {
-    switch: 0,
+    switch: -1,
     gateway_fence: GATEWAY_FENCE_ON + 1,
     gateway_led: GATEWAY_LED_ON + 1,
     garage_door: GARAGE_DOOR_ON + 1,
@@ -68,81 +84,94 @@ export const deviceElements = {
         {
             id: "switch",
             name: "Switch",
-            image: require("assets/images/board-socket.jpg")
+            image: require("assets/images/board-socket.jpg"),
+            isMode: false
         }
     ],
     gateway: [
         {
             id: 'gateway_fence',
             name: "Fence",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         },
         {
             id: "gateway_led",
             name: "Light",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: true
         }
     ],
     garage: [
         {
             id: 'garage_door',
             name: "Door",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: true
         },
         {
             id: "garage_led",
             name: "Light",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         }
     ],
     living_room: [
         {
             id: "living_room_door",
             name: "Door",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         },
         {
             id: "living_room_led",
             name: "Light",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         }
     ],
     kitchen: [
         {
             id: "kitchen_window",
             name: "Window",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         },
         {
             id: "kitchen_led",
             name: "Light",
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         }
     ],
     wc: [
         {
             id: 'wc_led',
             name: 'Light',
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: true
         }
     ],
     yard: [
         {
             id: 'yard_drying_rack',
             name: 'Drying Rack',
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: true
         }
     ],
     bed_room: [
         {
             id: 'bed_room_led',
             name: 'Light',
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         },
         {
             id: 'bed_room_fan',
             name: 'Fan',
-            image: require("assets/images/default.png")
+            image: require("assets/images/default.png"),
+            isMode: false
         }
     ]
 
@@ -176,4 +205,14 @@ export const allDevicesStatusOff = [
     YARD_DRYING_RACK_ON + 1,
     BED_ROOM_LED_ON + 1,
     BED_ROM_FAN_ON + 1
-]
+];
+
+export const devicesMode = {
+    gateway_led: 3,
+    garage_door: 7,
+    wc_led: 21,
+    yard_drying_rack: 25,
+};
+
+export const deviceModeSensor = [3, 7, 21, 25];
+export const deviceModeButton = [4, 8, 22, 26];

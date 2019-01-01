@@ -7,7 +7,15 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TouchableOpacity, Dimensions} from 'react-native';
+import {
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    Dimensions,
+    Switch
+} from 'react-native';
 import {
     NativeModules,
     NativeEventEmitter,
@@ -18,19 +26,21 @@ import {
 } from "react-native";
 import {connect} from 'react-redux'
 import _ from 'lodash'
+import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import Header from "../../components/Header";
+import styles from './styles'
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../../actions/awsIoT'
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
     allDevicesStatusOn,
-    allDevicesStatusOff,
+    allDevicesStatusOff, deviceModeSensor,
 } from '../../constants/devices';
+
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
 
 const isIOS = Platform.OS === "ios";
-const {width, height} = Dimensions.get("window")
 
 class AWSIoT extends Component {
     constructor(props) {
@@ -68,31 +78,33 @@ class AWSIoT extends Component {
     }
 
     handleMessage = (message) => {
-        const data = JSON.parse(message);
-        if (data.eventType) {
-            if (data.eventType === "disconnected") {
-                this.props.onUpdateSwitchDeviceStatus(false);
-                this.props.onUpdateDeviceStatus({switch: 0})
-            } else if (data.eventType === "connected") {
-                this.props.onUpdateSwitchDeviceStatus(true);
-                publish(STATUS_TOPIC, "STATUS")
+        if (this.isJSON(message)) {
+            const data = JSON.parse(message);
+            if (data.eventType) {
+                if (data.eventType === "disconnected") {
+                    this.props.onUpdateSwitchDeviceStatus(false);
+                    this.props.onUpdateDeviceStatus({switch: -1})
+                } else if (data.eventType === "connected") {
+                    this.props.onUpdateSwitchDeviceStatus(true);
+                    publish(STATUS_TOPIC, "STATUS")
+                }
             }
         }
         if (this.isInt(message)) {
             const {deviceStatus} = this.props;
-            // switch (message) {
-            //     case "ON":
-            //         this.props.onUpdateDeviceStatus({switch: 1});
-            //         return;
-            //     case "OFF":
-            //         this.props.onUpdateDeviceStatus({switch: 0});
-            //         return
-            //     case "Device connec;ted!":
-            //         this.props.onUpdateSwitchDeviceStatus(true);
-            //         return;
-            //     default:
-            //         return
-            // }
+            switch (message) {
+                case "ON":
+                    this.props.onUpdateDeviceStatus({switch: 0});
+                    break;
+                case "OFF":
+                    this.props.onUpdateDeviceStatus({switch: -1});
+                    break;
+                case "Device connected!":
+                    this.props.onUpdateSwitchDeviceStatus(true);
+                    break;
+                default:
+                    break
+            }
             const newDeviceStatus = parseInt(message);
             if (newDeviceStatus) {
                 const deviceStatusKeys = Object.keys(deviceStatus);
@@ -145,45 +157,58 @@ class AWSIoT extends Component {
 
     _onPress = id => {
         const {devices, deviceStatus} = this.props;
-        // const params = {}
-        // params[data.id] = deviceStatus[data.id] === 0 ? 1 : 0;
-        // if (id === "switch") {
-        //     publish(MESSAGE_TOPIC, deviceStatus[id] === 0 ? "ON" : "OFF")
-        // }
-        let status = null;
-        const deviceOnIdx = allDevicesStatusOn.indexOf(deviceStatus[id]);
-        if (deviceOnIdx >= 0) {
-            status = deviceStatus[id] + 1
+
+        if (id === "switch") {
+            publish(MESSAGE_TOPIC, deviceStatus[id] === -1 ? "ON" : "OFF")
+        } else {
+            let status = null;
+            const deviceOnIdx = allDevicesStatusOn.indexOf(deviceStatus[id]);
+            if (deviceOnIdx >= 0) {
+                status = deviceStatus[id] + 1
+            }
+            const deviceOffIdx = allDevicesStatusOff.indexOf(deviceStatus[id]);
+            if (deviceOffIdx >= 0) {
+                status = deviceStatus[id] - 1
+            }
+            publish(MESSAGE_TOPIC, status.toString())
         }
-        const deviceOffIdx = allDevicesStatusOff.indexOf(deviceStatus[id]);
-        if (deviceOffIdx >= 0) {
-            status = deviceStatus[id] - 1
-        }
-        publish(MESSAGE_TOPIC, status.toString())
     }
 
     _renderDevice = (data) => {
-        const {deviceStatus} = this.props;
+        const {deviceStatus, devicesMode} = this.props;
+        const currentMode = devicesMode[data.id];
+        const isMode = deviceModeSensor.indexOf(currentMode) >= 0;
         return (
             <View style={styles.item}>
-                <TouchableOpacity
-                    style={{
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}
-                    onPress={() => {
-                        this._onPress(data.id)
-                    }}
-                    disabled={!(this.props.awsiot.connected)}
-                >
-                    <Image style={styles.image} source={data.image}/>
-                    <Text>{data.name}</Text>
-                    {
-                        allDevicesStatusOff.indexOf(deviceStatus[data.id]) >= 0
-                            ? <View style={styles.inactiveDevice}/>
-                            : null
-                    }
-                </TouchableOpacity>
+                <View style={styles.controlDevice}>
+                    <TouchableOpacity
+                        style={{
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                        onPress={() => {
+                            this._onPress(data.id)
+                        }}
+                        disabled={!(this.props.awsiot.connected)}
+                    >
+                        <Image style={styles.image} source={data.image}/>
+                        <Text>{data.name}</Text>
+                        {
+                            allDevicesStatusOff.indexOf(deviceStatus[data.id]) >= 0
+                            || data.id === "switch" && deviceStatus[data.id] === -1
+                                ? <View style={styles.inactiveDevice}/>
+                                : null
+                        }
+                    </TouchableOpacity>
+                </View>
+                {
+                    data.isMode ?
+                        <Switch
+                            style={styles.switch}
+                            value={isMode}
+                        />
+                        : null
+                }
             </View>
         )
     }
@@ -192,7 +217,17 @@ class AWSIoT extends Component {
         const {devices} = this.props;
         return (
             <View style={styles.container}>
-                <Header title={"AWS IoT"}/>
+                <Header title={"My Home"}/>
+                <View style={styles.intro}>
+                    <View style={styles.intro_child}>
+                        <Icon name='home' size={60} color={'#fff'}/>
+                    </View>
+                    <View style={styles.intro_child}>
+                        <View style={styles.intro_right_child_border} />
+                        <Text style={styles.all_device_title}>All Devices</Text>
+                        <Text style={styles.all_devices_val}>10 devices</Text>
+                    </View>
+                </View>
                 <View style={styles.content}>
                     <FlatList
                         extraData={this.props}
@@ -211,7 +246,8 @@ const mapStateToProps = state => {
     return {
         awsiot: state.awsiot,
         devices: state.awsiot.devices,
-        deviceStatus: state.awsiot.deviceStatus
+        deviceStatus: state.awsiot.deviceStatus,
+        devicesMode: state.awsiot.devicesMode,
     }
 }
 
@@ -222,34 +258,3 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AWSIoT)
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    content: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    item: {
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 15,
-        width: width / 2,
-        height: width / 2
-    },
-    image: {
-        width: 100,
-        height: 100,
-        resizeMode: "contain"
-    },
-    inactiveDevice: {
-        backgroundColor: "#e1e1e1",
-        opacity: 0.8,
-        width: 120,
-        height: 120,
-        position: "absolute",
-    }
-});

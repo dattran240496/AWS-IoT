@@ -11,7 +11,8 @@ export default class SmartConfig extends React.Component {
         this.state = {
             ssid: '',
             password: '',
-            bssid: ''
+            bssid: '',
+            btnTitle: 'Connect'
         }
     }
 
@@ -33,44 +34,51 @@ export default class SmartConfig extends React.Component {
     }
 
     connectSmartConfig = () => {
-        Smartconfig.start({
-            type: 'esptouch', //or airkiss, now doesn't not effect
-            ssid: this.state.ssid,
-            bssid: this.state.bssid, //"" if not need to filter (don't use null)
-            password: this.state.password,
-            timeout: 50000 //now doesn't not effect
-        }).then(function(results){
-            //Array of device success do smartconfig
-            console.log('rs', results);
-        }).catch(function(error) {
-            Smartconfig.stop(); //interrupt task
-            console.log('e', error)
-        });
-        Smartconfig.stop(); //interrupt task
-    };
+        if (this.state.btnTitle === 'Connect') {
+            Smartconfig.start({
+                type: 'esptouch', //or airkiss, now doesn't not effect
+                ssid: this.state.ssid,
+                bssid: this.state.bssid, //"" if not need to filter (don't use null)
+                password: this.state.password,
+                timeout: 50000 //now doesn't not effect
+            }).then(function(results){
+                //Array of device success do smartconfig
+                console.log('rs', results);
+            }).catch(function(error) {
+                Smartconfig.stop(); //interrupt task
+                console.log('e', error)
+            });
+            this.setState({btnTitle: 'Cancel'}, () => {
+                setTimeout(() => {
+                    Smartconfig.stop();
+                    this.setState({btnTitle: 'Connect'})
+                }, 5000);
+            })
+        } else if (this.state.btnTitle === 'Cancel') {
+            Smartconfig.stop();
+            this.setState({btnTitle: 'Connect'})
+        }
 
-    cancelTask = () => {
-        Smartconfig.stop(); //interrupt task
-    }
+    };
 
     render() {
         return (
             <View style={styles.container}>
+                <Text style={styles.title}>
+                    Smart Config
+                </Text>
                 <TextInput style={[styles.txtIpt, styles.ssidTxtIpt]}
+                           placeholder='SSID'
                            value={this.state.ssid}/>
                 <TextInput style={[styles.txtIpt, styles.passwordTxtIpt]}
+                           placeholder='Password'
                            onChangeText={txt => this.setState({password: txt})}
                            value={this.state.password}/>
-                <TouchableOpacity onPress={() => this.connectSmartConfig()}>
-                    <Text>
-                        Connect
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{
-                    marginTop: 15
-                }} onPress={() => this.cancelTask()}>
-                    <Text>
-                        Cancel
+                <TouchableOpacity
+                    style={styles.btn}
+                    onPress={() => this.connectSmartConfig()}>
+                    <Text style={styles.btn_title}>
+                        {this.state.btnTitle}
                     </Text>
                 </TouchableOpacity>
             </View>
