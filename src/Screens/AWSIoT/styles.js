@@ -10,24 +10,31 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        margin: 5
     },
     item: {
-        width: width / 2,
+        width: width / 2 - 30,
         // height: width / 2,
         //justifyContent: "center",
         alignItems: "center",
-        paddingTop: 15
+        paddingTop: 15,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        margin: 10,
     },
     controlDevice: {
         justifyContent: "center",
         alignItems: "center",
-        // padding: 15,
-        // width: width / 2,
+        padding: 15,
+        width: width / 2,
     },
     image: {
         width: 100,
         height: 100,
         resizeMode: "contain"
+    },
+    itemName: {
+        marginTop: 15
     },
     inactiveDevice: {
         backgroundColor: "#e1e1e1",
@@ -42,7 +49,7 @@ export default StyleSheet.create({
     intro: {
         margin: 15,
         borderRadius: 8,
-        backgroundColor: '#5A3A91',
+        //backgroundColor: '#5A3A91',
         width: width - 30,
         height: 150,
         flexDirection: 'row',

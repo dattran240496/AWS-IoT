@@ -7,13 +7,19 @@ target 'demoAWS' do
 
   # Pods for demoAWS
 pod ‘AWSIoT’, ‘~>2.6.0'
+#pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+#pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
   target 'demoAWS-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
 
-    # pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+    #pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-    pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
+    #pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
+    pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
   end
 

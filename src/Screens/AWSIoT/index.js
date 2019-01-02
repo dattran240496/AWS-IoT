@@ -9,12 +9,10 @@
 import React, {Component} from 'react';
 import {
     Platform,
-    StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    Dimensions,
-    Switch
+    Switch, Dimensions
 } from 'react-native';
 import {
     NativeModules,
@@ -27,6 +25,8 @@ import {
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
+import LinearGradient from 'react-native-linear-gradient';
+// import {BoxShadow} from 'react-native-shadow'
 import Header from "../../components/Header";
 import styles from './styles'
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
@@ -34,13 +34,14 @@ import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
     allDevicesStatusOn,
-    allDevicesStatusOff, deviceModeSensor,
+    allDevicesStatusOff, deviceModeSensor, deviceElements, allRoom,
 } from '../../constants/devices';
 
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
 
 const isIOS = Platform.OS === "ios";
+const {width, height} = Dimensions.get("window")
 
 class AWSIoT extends Component {
     constructor(props) {
@@ -178,6 +179,17 @@ class AWSIoT extends Component {
         const {deviceStatus, devicesMode} = this.props;
         const currentMode = devicesMode[data.id];
         const isMode = deviceModeSensor.indexOf(currentMode) >= 0;
+        const shadowOpt = {
+            width: width / 2 - 30,
+            height: width / 2 - 30,
+            color: "#000",
+            border: 2,
+            radius: 3,
+            opacity: 0.2,
+            x: 0,
+            y: 3,
+            style: {marginVertical: 5}
+        }
         return (
             <View style={styles.item}>
                 <View style={styles.controlDevice}>
@@ -192,47 +204,50 @@ class AWSIoT extends Component {
                         disabled={!(this.props.awsiot.connected)}
                     >
                         <Image style={styles.image} source={data.image}/>
-                        <Text>{data.name}</Text>
-                        {
-                            allDevicesStatusOff.indexOf(deviceStatus[data.id]) >= 0
-                            || data.id === "switch" && deviceStatus[data.id] === -1
-                                ? <View style={styles.inactiveDevice}/>
-                                : null
-                        }
+                        <Text style={styles.itemName}>{data.name}</Text>
+                        {/*{*/}
+                        {/*allDevicesStatusOff.indexOf(deviceStatus[data.id]) >= 0*/}
+                        {/*|| data.id === "switch" && deviceStatus[data.id] === -1*/}
+                        {/*? <View style={styles.inactiveDevice}/>*/}
+                        {/*: null*/}
+                        {/*}*/}
                     </TouchableOpacity>
                 </View>
-                {
-                    data.isMode ?
-                        <Switch
-                            style={styles.switch}
-                            value={isMode}
-                        />
-                        : null
-                }
+                {/*{*/}
+                {/*data.isMode ?*/}
+                {/*<Switch*/}
+                {/*style={styles.switch}*/}
+                {/*value={isMode}*/}
+                {/*/>*/}
+                {/*: null*/}
+                {/*}*/}
             </View>
         )
     }
 
     render() {
         const {devices} = this.props;
+        let allDevices = 0;
+        Object.values(deviceElements).forEach(item => allDevices += item.length);
         return (
             <View style={styles.container}>
                 <Header title={"My Home"}/>
-                <View style={styles.intro}>
+                <LinearGradient start={{x: 1, y: 0}} end={{x: 0, y: 0}} colors={['#7D3C98', '#8E44AD', '#BB8FCE']}
+                                style={styles.intro}>
                     <View style={styles.intro_child}>
                         <Icon name='home' size={60} color={'#fff'}/>
                     </View>
                     <View style={styles.intro_child}>
-                        <View style={styles.intro_right_child_border} />
+                        <View style={styles.intro_right_child_border}/>
                         <Text style={styles.all_device_title}>All Devices</Text>
-                        <Text style={styles.all_devices_val}>10 devices</Text>
+                        <Text style={styles.all_devices_val}>{allDevices} devices</Text>
                     </View>
-                </View>
+                </LinearGradient>
                 <View style={styles.content}>
                     <FlatList
                         extraData={this.props}
                         renderItem={({item, index}) => this._renderDevice(item)}
-                        data={devices}
+                        data={Object.values(allRoom)}
                         keyExtractor={(item, index) => item.id}
                         numColumns={2}
                     />

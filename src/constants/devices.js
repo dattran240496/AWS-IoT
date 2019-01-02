@@ -15,50 +15,42 @@ export const allRoom = {
     switch: {
         id: "switch",
         name: "Switch",
-        iconName: 'torii-gate',
-        iconColor: 'brown'
+        image: require("assets/icons/switch.png"),
     },
     gateway: {
         id: 'gateway',
         name: 'Gateway',
-        iconName: 'torii-gate',
-        iconColor: 'brown'
+        image: require("assets/icons/gateway.png"),
     },
     garage: {
         id: 'garage',
         name: 'Garage',
-        iconName: 'warehouse',
-        iconColor: '#e1e1e1'
+        image: require("assets/icons/garage.png"),
     },
     living_room: {
         id: 'living_room',
         name: "Living Room",
-        iconName: 'couch',
-        iconColor: '#2CB766'
+        image: require("assets/icons/livingroom.png"),
     },
     kitchen: {
         id: 'kitchen',
         name: 'Kitchen',
-        iconName: 'utensils',
-        iconColor: '#C0C0C0'
+        image: require("assets/icons/kitchen.png"),
     },
     wc: {
         id: 'wc',
         name: 'WC',
-        iconName: 'toilet',
-        iconColor: 'yellow'
+        image: require("assets/icons/toilet.png"),
     },
     yard: {
         id: 'yard',
         name: 'Yard',
-        iconName: 'cloud-shower-heavy',
-        iconColor: 'blue'
+        image: require("assets/icons/yard.png"),
     },
     bed_room: {
         id: 'bed_room',
         name: 'Bed Room',
-        iconName: 'bed',
-        iconColor: '#4272B2'
+        image: require("assets/icons/bedroom.png"),
     }
 
 };
