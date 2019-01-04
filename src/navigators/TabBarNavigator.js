@@ -1,15 +1,39 @@
 import React from 'react'
-import {createBottomTabNavigator} from 'react-navigation'
+import {createBottomTabNavigator, createStackNavigator} from 'react-navigation'
 import AWSIoT from "../Screens/AWSIoT";
 import SmartConfig from "../Screens/SmartConfig";
 import Icon from 'react-native-vector-icons/FontAwesome'
-export default createBottomTabNavigator({
+import RoomDetail from "../components/RoomDetail";
+import DeviceDetail from "../components/DeviceDetail/index";
+
+const HomeStack = createStackNavigator({
     Home: {
         screen: AWSIoT,
+        navigationOptions: {
+            header: null,
+        },
+    },
+    RoomDetail: {
+        screen: RoomDetail,
+        navigationOptions: {
+            header: null,
+        },
+    },
+    DeviceDetail: {
+        screen: DeviceDetail,
+        navigationOptions: {
+            header: null,
+        },
+    }
+});
+
+export default createBottomTabNavigator({
+    Home: {
+        screen: HomeStack,
     },
     SmartConfig: {
         screen: SmartConfig,
-    }
+    },
 }, {
     tabBarPosition: 'bottom',
     animationEnabled: false,

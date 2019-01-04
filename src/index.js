@@ -11,7 +11,6 @@ export default class App extends React.Component {
             <Provider store={store}>
                 <Root>
                     <AppNavigator
-                        onNavigationStateChange={null}
                         ref={(navigatorRef) => {
                             navigator.setContainer(navigatorRef)
                         }}

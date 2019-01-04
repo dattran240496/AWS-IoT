@@ -1,19 +1,19 @@
 import {createStackNavigator, createAppContainer} from 'react-navigation';
 import TabBarNavigator from "./TabBarNavigator";
-import HomeDrawer from './HomeDrawer'
+import RoomDetail from '../components/RoomDetail'
 
 const RootStack = createStackNavigator(
     {
-        HomeDrawer: {
-            screen: HomeDrawer,
+        HomeStack: {
+            screen: TabBarNavigator,
             navigationOptions: {
                 header: null,
             },
         },
     },
     {
-        initialRouteName: 'HomeDrawer',
-        headerMode: 'screen',
+        initialRouteName: 'HomeStack',
+        headerMode: 'none',
         navigationOptions: {
             gesturesEnabled: true,
         },

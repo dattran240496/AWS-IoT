@@ -55,6 +55,7 @@
 		9403BB88219DCBAD006ECD1B /* AWSMqtt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403BB87219DCBAD006ECD1B /* AWSMqtt.swift */; };
 		9403BB8A219DCBFB006ECD1B /* AWSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9403BB89219DCBFB006ECD1B /* AWSConstants.swift */; };
 		9403BB8C219DCCE0006ECD1B /* AWSMQtt.m in Sources */ = {isa = PBXBuildFile; fileRef = 9403BB8B219DCCE0006ECD1B /* AWSMQtt.m */; };
+		9410A3DB21DDA79000CB7A49 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9410A3D721DDA77C00CB7A49 /* libRNSVG.a */; };
 		942E8E9221DD21A600E3CD32 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 942E8E6621DD218200E3CD32 /* libBVLinearGradient.a */; };
 		94BC53C121B43FAD00D9CD88 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94BC53C021B43FAD00D9CD88 /* ExternalAccessory.framework */; };
 		94E391AE21B3EA4500179CAF /* libRNNetworkInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E391AD21B3EA3200179CAF /* libRNNetworkInfo.a */; };
@@ -336,6 +337,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		9410A3D621DDA77C00CB7A49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9410A3A721DDA77C00CB7A49 /* RNSVG.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0CF68AC11AF0540F00FF9E5C;
+			remoteInfo = RNSVG;
+		};
+		9410A3D821DDA77C00CB7A49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9410A3A721DDA77C00CB7A49 /* RNSVG.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 94DDAC5C1F3D024300EED511;
+			remoteInfo = "RNSVG-tvOS";
+		};
 		942E8E6521DD218200E3CD32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 942E8E6021DD218200E3CD32 /* BVLinearGradient.xcodeproj */;
@@ -441,6 +456,7 @@
 		9403BB87219DCBAD006ECD1B /* AWSMqtt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSMqtt.swift; sourceTree = "<group>"; };
 		9403BB89219DCBFB006ECD1B /* AWSConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSConstants.swift; sourceTree = "<group>"; };
 		9403BB8B219DCCE0006ECD1B /* AWSMQtt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AWSMQtt.m; sourceTree = "<group>"; };
+		9410A3A721DDA77C00CB7A49 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
 		942E8E6021DD218200E3CD32 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		94BC53C021B43FAD00D9CD88 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		94BC53C221B43FAD00D9CD88 /* demoAWS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = demoAWS.entitlements; path = demoAWS/demoAWS.entitlements; sourceTree = "<group>"; };
@@ -481,6 +497,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9410A3DB21DDA79000CB7A49 /* libRNSVG.a in Frameworks */,
 				942E8E9221DD21A600E3CD32 /* libBVLinearGradient.a in Frameworks */,
 				94E391AE21B3EA4500179CAF /* libRNNetworkInfo.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
@@ -716,6 +733,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9410A3A721DDA77C00CB7A49 /* RNSVG.xcodeproj */,
 				942E8E6021DD218200E3CD32 /* BVLinearGradient.xcodeproj */,
 				94E391A821B3EA3200179CAF /* RNNetworkInfo.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
@@ -783,6 +801,15 @@
 				9403BB8B219DCCE0006ECD1B /* AWSMQtt.m */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		9410A3A821DDA77C00CB7A49 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9410A3D721DDA77C00CB7A49 /* libRNSVG.a */,
+				9410A3D921DDA77C00CB7A49 /* libRNSVG-tvOS.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		942E8E6121DD218200E3CD32 /* Products */ = {
@@ -1050,6 +1077,10 @@
 					ProjectRef = 94E391A821B3EA3200179CAF /* RNNetworkInfo.xcodeproj */;
 				},
 				{
+					ProductGroup = 9410A3A821DDA77C00CB7A49 /* Products */;
+					ProjectRef = 9410A3A721DDA77C00CB7A49 /* RNSVG.xcodeproj */;
+				},
+				{
 					ProductGroup = 94E391A321B3E45F00179CAF /* Products */;
 					ProjectRef = D7B1D868167D40E9884FFF58 /* RNWifi.xcodeproj */;
 				},
@@ -1315,6 +1346,20 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9410A3D721DDA77C00CB7A49 /* libRNSVG.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSVG.a;
+			remoteRef = 9410A3D621DDA77C00CB7A49 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9410A3D921DDA77C00CB7A49 /* libRNSVG-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRNSVG-tvOS.a";
+			remoteRef = 9410A3D821DDA77C00CB7A49 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		942E8E6621DD218200E3CD32 /* libBVLinearGradient.a */ = {

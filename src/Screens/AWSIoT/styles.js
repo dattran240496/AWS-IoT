@@ -10,34 +10,41 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        margin: 5
     },
     item: {
-        width: width / 2 - 30,
-        // height: width / 2,
-        //justifyContent: "center",
+        width: width / 2 - 20,
+        height: width / 2 - 20,
+        justifyContent: "center",
         alignItems: "center",
-        paddingTop: 15,
         backgroundColor: '#fff',
-        borderRadius: 5,
-        margin: 10,
+        borderRadius: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+        margin: 5
     },
     controlDevice: {
         justifyContent: "center",
         alignItems: "center",
-        padding: 15,
-        width: width / 2,
+        // width: width / 2 - 10,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 50,
+        height: 50,
         resizeMode: "contain"
     },
     itemName: {
-        marginTop: 15
+        marginTop: 15,
+        fontSize: 15,
+        fontWeight: '500'
+    },
+    itemDevicesCount: {
+        marginTop: 5,
+        color: '#7F8C8D',
+        fontSize: 11
     },
     inactiveDevice: {
-        backgroundColor: "#e1e1e1",
         opacity: 0.8,
         width: 120,
         height: 120,
@@ -49,7 +56,6 @@ export default StyleSheet.create({
     intro: {
         margin: 15,
         borderRadius: 8,
-        //backgroundColor: '#5A3A91',
         width: width - 30,
         height: 150,
         flexDirection: 'row',
