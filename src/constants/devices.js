@@ -291,11 +291,11 @@ export const allDevicesStatusOff = [
 ];
 
 export const devicesMode = {
-    gateway_led: 4,
+    gateway_led: 3,
     garage_door: 7,
     wc_led: 21,
     yard_drying_rack: 25,
 };
 
-export const deviceModeSensor = [3, 7, 21, 25];
-export const deviceModeButton = [4, 8, 22, 26];
+export const deviceSensorMode = [3, 7, 21, 25];
+export const deviceButtonMode = [4, 8, 22, 26];

@@ -1,7 +1,9 @@
 import {
     CHANGE_ROOM_REQUEST,
     UPDATE_DEVICE_STATUS,
-    UPDATE_AWS_STATUS, UPDATE_SWITCH_DEVICE_STATUS
+    UPDATE_AWS_STATUS,
+    UPDATE_SWITCH_DEVICE_STATUS,
+    UPDATE_DEVICE_MODE
 } from "../actions/type";
 import {deviceElements, deviceStatusDefault, devicesMode} from "../constants/devices";
 
@@ -38,6 +40,14 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 switchStatus: action.params
+            }
+        case UPDATE_DEVICE_MODE:
+            return {
+                ...state,
+                devicesMode: {
+                    ...state.devicesMode,
+                    ...action.params
+                }
             };
         default:
             return {

@@ -7,19 +7,26 @@ import {
     NativeModules,
     DeviceEventEmitter,
     Platform,
-    NativeEventEmitter
+    NativeEventEmitter,
+    DatePickerIOS,
 } from 'react-native'
 import {connect} from 'react-redux'
 import _ from "lodash";
 import Button from "../Button";
-import {updateAWSStatus, updateDeviceStatus, updateSwitchDeviceStatus} from "../../actions/awsIoT";
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import {
+    updateAWSStatus,
+    updateDeviceStatus,
+    updateSwitchDeviceStatus,
+    updateDeviceMode
+} from "../../actions/awsIoT";
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {
     allDevices,
     allDevicesStatusOff,
     allDevicesStatusOn,
-    allRoom, deviceModeButton,
-    deviceModeSensor,
+    allRoom, deviceButtonMode,
+    deviceSensorMode,
     modeConst
 } from "../../constants/devices";
 import {MESSAGE_TOPIC, STATUS_TOPIC} from '../../constants/topics'
@@ -34,7 +41,8 @@ class DeviceDetail extends React.Component {
         super(props);
         this.state = {
             deviceId: props.navigation.getParam('deviceId'),
-            deviceDetail: allDevices[props.navigation.getParam('deviceId')]
+            deviceDetail: allDevices[props.navigation.getParam('deviceId')],
+            isDateTimePickerVisible: false,
         }
     }
 
@@ -56,8 +64,16 @@ class DeviceDetail extends React.Component {
         return true
     }
 
+    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+    _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+    _handleDatePicked = (date) => {
+        console.log('A date has been picked: ', date);
+        this._hideDateTimePicker();
+    };
+
     handleMessage = (message) => {
-        console.log('zzz message', message)
         if (this.isJSON(message)) {
             const data = JSON.parse(message);
             if (data.eventType) {
@@ -71,7 +87,7 @@ class DeviceDetail extends React.Component {
             }
         }
         if (this.isInt(message)) {
-            const {deviceStatus} = this.props;
+            const {deviceStatus, devicesMode} = this.props;
             switch (message) {
                 case "ON":
                     this.props.onUpdateDeviceStatus({switch: 0});
@@ -85,21 +101,37 @@ class DeviceDetail extends React.Component {
                 default:
                     break
             }
-            const newDeviceStatus = parseInt(message);
-            if (newDeviceStatus) {
+            const newStatus = parseInt(message);
+            if (newStatus) {
                 const deviceStatusKeys = Object.keys(deviceStatus);
                 const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (allDevicesStatusOff.indexOf(newDeviceStatus) >= 0) {
-                        return deviceStatus[key] === newDeviceStatus - 1
+                    if (allDevicesStatusOff.indexOf(newStatus) >= 0) {
+                        return deviceStatus[key] === newStatus - 1
                     }
-                    if (allDevicesStatusOn.indexOf(newDeviceStatus) >= 0) {
-                        return deviceStatus[key] === newDeviceStatus + 1
+                    if (allDevicesStatusOn.indexOf(newStatus) >= 0) {
+                        return deviceStatus[key] === newStatus + 1
 
                     }
                 });
+                const deviceModeKeys = Object.keys(devicesMode);
+                const changedMode = _.find(deviceModeKeys, key => {
+                    const deviceSensorModeIdx = deviceSensorMode.indexOf(devicesMode[key]);
+                    if (deviceSensorModeIdx >= 0) {
+                        return devicesMode[key] === newStatus - 1
+                    }
+                    const deviceButtonModeIdx = deviceButtonMode.indexOf(devicesMode[key]);
+                    if (deviceButtonModeIdx >= 0) {
+                        return devicesMode[key] === newStatus + 1
+                    }
+                })
                 if (changedDevice) {
                     this.props.onUpdateDeviceStatus({
-                        [changedDevice]: newDeviceStatus
+                        [changedDevice]: newStatus
+                    })
+                }
+                if (changedMode) {
+                    this.props.onUpdateDeviceMode({
+                        [changedMode]: newStatus
                     })
                 }
             }
@@ -143,9 +175,28 @@ class DeviceDetail extends React.Component {
             if (deviceOffIdx >= 0) {
                 status = deviceStatus[id] - 1
             }
-            publish(MESSAGE_TOPIC, status.toString())
+            if (status) {
+                publish(MESSAGE_TOPIC, status.toString())
+            }
         }
     };
+
+    onChangeMode = (id, mode) => {
+        const {devicesMode} = this.props
+        let newMode = null
+        const deviceSensorModeIdx = deviceSensorMode.indexOf(devicesMode[id]);
+        if (deviceSensorModeIdx >= 0 && mode === 'button') {
+            newMode = devicesMode[id] + 1
+        }
+        const deviceButtonModeIdx = deviceButtonMode.indexOf(devicesMode[id]);
+        if (deviceButtonModeIdx >= 0 && mode === 'sensor') {
+            newMode = devicesMode[id] - 1
+        }
+        if (newMode) {
+            publish(MESSAGE_TOPIC, newMode.toString())
+        }
+
+    }
 
     renderMode = () => {
         const {devicesMode} = this.props;
@@ -154,23 +205,25 @@ class DeviceDetail extends React.Component {
                 <Text style={styles.mode_left_content}>Mode</Text>
                 <View style={styles.mode_right_content}>
                     {this.state.deviceDetail.mode.map((item, index) => {
-                        const isSensorMode = deviceModeSensor.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'sensor'
-                        const isButtonMode = deviceModeButton.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'button'
+                        const isSensorMode = deviceSensorMode.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'sensor'
+                        const isButtonMode = deviceButtonMode.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'button'
                         return (
-                            <TouchableOpacity key={index}>
-                                <Button
-                                    colors={isSensorMode ? null : isButtonMode ? ['#7C81EA', '#2F38EA', '#121DED'] : ['#CACFD2', '#BDC3C7', '#909497']}
-                                    title={modeConst[item].name}
-                                    buttonStyle={{
-                                        marginRight: 20,
-                                        borderRadius: 20,
-                                        height: 35,
-                                        width: null,
-                                        paddingLeft: 10,
-                                        paddingRight: 10,
-                                    }}
-                                />
-                            </TouchableOpacity>
+                            <Button
+                                key={index}
+                                onPress={() => {
+                                    this.onChangeMode(this.state.deviceId, item)
+                                }}
+                                colors={isSensorMode ? null : isButtonMode ? ['#7C81EA', '#2F38EA', '#121DED'] : ['#CACFD2', '#BDC3C7', '#909497']}
+                                title={modeConst[item].name}
+                                buttonStyle={{
+                                    marginRight: 20,
+                                    borderRadius: 20,
+                                    height: 35,
+                                    width: null,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                }}
+                            />
                         )
                     })}
                 </View>
@@ -217,6 +270,21 @@ class DeviceDetail extends React.Component {
                     <Image style={styles.image} source={image} resizeMode='contain'/>
                 </TouchableOpacity>
                 {this.state.deviceDetail.isMode && this.renderMode()}
+                {isIOS && (
+                    <View style={styles.mode_wrapper}>
+                        <Text style={styles.mode_left_content}>Timer</Text>
+                        <View style={{flex: 3}}>
+                            <TouchableOpacity onPress={this._showDateTimePicker}>
+                                <Text>Show DatePicker</Text>
+                            </TouchableOpacity>
+                            <DateTimePicker
+                                isVisible={this.state.isDateTimePickerVisible}
+                                onConfirm={this._handleDatePicked}
+                                onCancel={this._hideDateTimePicker}
+                            />
+                        </View>
+                    </View>
+                )}
             </View>
         )
     }
@@ -234,7 +302,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     onUpdateDeviceStatus: params => dispatch(updateDeviceStatus(params)),
     onUpdateAWSStatus: params => dispatch(updateAWSStatus(params)),
-    onUpdateSwitchDeviceStatus: params => dispatch(updateSwitchDeviceStatus(params))
+    onUpdateSwitchDeviceStatus: params => dispatch(updateSwitchDeviceStatus(params)),
+    onUpdateDeviceMode: params => dispatch(updateDeviceMode(params)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeviceDetail)

@@ -33,7 +33,7 @@ import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
     allDevicesStatusOn,
-    allDevicesStatusOff, deviceModeSensor, deviceElements, allRoom,
+    allDevicesStatusOff, deviceSensorMode, deviceElements, allRoom,
 } from '../../constants/devices';
 import navigator from 'navigators/CustomNavigator'
 const {IoTModule} = NativeModules;//For android
@@ -99,7 +99,7 @@ class AWSIoT extends Component {
     _renderDevice = (data) => {
         const {deviceStatus, devicesMode} = this.props;
         const currentMode = devicesMode[data.id];
-        const isMode = deviceModeSensor.indexOf(currentMode) >= 0;
+        const isMode = deviceSensorMode.indexOf(currentMode) >= 0;
         const shadowOpt = {
             width: width / 2 - 20,
             height: width / 2 - 20,
