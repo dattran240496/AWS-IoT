@@ -14,7 +14,14 @@ import _ from "lodash";
 import Button from "../Button";
 import {updateAWSStatus, updateDeviceStatus, updateSwitchDeviceStatus} from "../../actions/awsIoT";
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
-import {allDevices, allDevicesStatusOff, allDevicesStatusOn, allRoom} from "../../constants/devices";
+import {
+    allDevices,
+    allDevicesStatusOff,
+    allDevicesStatusOn,
+    allRoom, deviceModeButton,
+    deviceModeSensor,
+    modeConst
+} from "../../constants/devices";
 import {MESSAGE_TOPIC, STATUS_TOPIC} from '../../constants/topics'
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
@@ -138,6 +145,37 @@ class DeviceDetail extends React.Component {
             }
             publish(MESSAGE_TOPIC, status.toString())
         }
+    };
+
+    renderMode = () => {
+        const {devicesMode} = this.props;
+        return (
+            <View style={styles.mode_wrapper}>
+                <Text style={styles.mode_left_content}>Mode</Text>
+                <View style={styles.mode_right_content}>
+                    {this.state.deviceDetail.mode.map((item, index) => {
+                        const isSensorMode = deviceModeSensor.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'sensor'
+                        const isButtonMode = deviceModeButton.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'button'
+                        return (
+                            <TouchableOpacity key={index}>
+                                <Button
+                                    colors={isSensorMode ? null : isButtonMode ? ['#7C81EA', '#2F38EA', '#121DED'] : ['#CACFD2', '#BDC3C7', '#909497']}
+                                    title={modeConst[item].name}
+                                    buttonStyle={{
+                                        marginRight: 20,
+                                        borderRadius: 20,
+                                        height: 35,
+                                        width: null,
+                                        paddingLeft: 10,
+                                        paddingRight: 10,
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        )
+                    })}
+                </View>
+            </View>
+        )
     }
 
     render() {
@@ -165,6 +203,7 @@ class DeviceDetail extends React.Component {
                         {allRoom[this.state.deviceDetail.roomId].name} {this.state.deviceDetail.name}
                     </Text>
                     <Button
+                        colors={isDeviceOn ? null : ['#CACFD2', '#BDC3C7', '#909497']}
                         buttonStyle={isDeviceOn ? {} : {backgroundColor: '#e1e1e1'}}
                         title={isDeviceOn ? 'ON' : 'OFF'}
                         onPress={() => {
@@ -172,7 +211,12 @@ class DeviceDetail extends React.Component {
                         }}
                     />
                 </View>
-                <Image style={styles.image} source={image} resizeMode='contain'/>
+                <TouchableOpacity onPress={() => {
+                    this.onChangeStatus(this.state.deviceId)
+                }}>
+                    <Image style={styles.image} source={image} resizeMode='contain'/>
+                </TouchableOpacity>
+                {this.state.deviceDetail.isMode && this.renderMode()}
             </View>
         )
     }

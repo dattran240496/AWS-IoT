@@ -10,30 +10,32 @@ export default class Button extends React.Component {
     static propTypes = {
         buttonStyle: PropTypes.oneOfType([PropTypes.number, PropTypes.instanceOf(Object)]),
         title: PropTypes.string,
-        onPress: PropTypes.func
+        onPress: PropTypes.func,
+        colors: PropTypes.array
     };
 
     static defaultProps = {
         buttonStyle: {},
         title: '',
         onPress: () => {
-        }
+        },
+        colors: ['#A569BD', '#8E44AD', '#6C3483']
     };
 
     render() {
         return (
-            <LinearGradient
-                start={{x: 1, y: 0}}
-                end={{x: 0, y: 0}}
-                colors={['#6C3483', '#8E44AD', '#BB8FCE']}
-                style={[styles.container, this.props.buttonStyle]}
-            >
-                <TouchableOpacity
+            <TouchableOpacity
+                onPress={() => this.props.onPress()}>
+                <LinearGradient
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={this.props.colors ? this.props.colors : Button.defaultProps.colors}
                     style={[styles.container, this.props.buttonStyle]}
-                    onPress={() => this.props.onPress()}>
+                >
                     <Text style={styles.title}>{this.props.title}</Text>
-                </TouchableOpacity>
-            </LinearGradient>
+                </LinearGradient>
+            </TouchableOpacity>
+
         )
     }
 }

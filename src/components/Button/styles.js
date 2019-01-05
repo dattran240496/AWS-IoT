@@ -6,10 +6,11 @@ export default StyleSheet.create({
         height: 30,
         borderRadius: 8,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     title: {
         fontSize: 15,
-        color: '#fff'
+        color: '#fff',
+        textAlign: 'center'
     }
 })

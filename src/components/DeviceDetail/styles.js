@@ -34,7 +34,21 @@ export default StyleSheet.create({
         fontWeight: '500'
     },
     image: {
-        height: 150,
+        height: 250,
         marginTop: 15
+    },
+    mode_wrapper: {
+        marginTop: 30,
+        flexDirection: 'row',
+        paddingLeft: 20,
+        paddingRight: 20,
+        alignItems: 'center'
+    },
+    mode_left_content: {
+        flex: 1
+    },
+    mode_right_content: {
+        flex: 3,
+        flexDirection: 'row',
     }
 })

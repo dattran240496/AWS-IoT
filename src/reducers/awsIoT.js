@@ -10,7 +10,7 @@ const initialState = {
     devices: [],
     connected: false,
     switchStatus: false,
-    devicesMode: devicesMode
+    devicesMode: devicesMode,
 }
 export default (state = initialState, action) => {
     switch (action.type) {

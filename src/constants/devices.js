@@ -81,7 +81,8 @@ export const allDevices = {
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
-        roomId: 'gateway'
+        roomId: 'gateway',
+        mode: ['sensor', 'button']
     },
     garage_door: {
         id: 'garage_door',
@@ -89,7 +90,8 @@ export const allDevices = {
         detailName: "Door",
         image: require("assets/icons/door.jpeg"),
         isMode: true,
-        roomId: 'garage'
+        roomId: 'garage',
+        mode: ['sensor', 'button']
     },
     garage_led: {
         id: "garage_led",
@@ -141,7 +143,8 @@ export const allDevices = {
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
-        roomId: 'wc'
+        roomId: 'wc',
+        mode: ['sensor', 'button']
     },
     yard_drying_rack: {
         id: 'yard_drying_rack',
@@ -149,7 +152,8 @@ export const allDevices = {
         detailName: 'Drying Rack',
         image: require("assets/icons/drying-rack.png"),
         isMode: true,
-        roomId: 'yard'
+        roomId: 'yard',
+        mode: ['sensor', 'button']
     },
     bed_room_led: {
         id: 'bed_room_led',
@@ -169,6 +173,17 @@ export const allDevices = {
         roomId: 'bed_room'
     }
 };
+
+export const modeConst = {
+    sensor: {
+        id: 'sensor',
+        name: 'Sensor'
+    },
+    button: {
+        id: 'button',
+        name: 'Button & Voice'
+    }
+}
 
 export const deviceStatusDefault = {
     switch: -1,
@@ -276,7 +291,7 @@ export const allDevicesStatusOff = [
 ];
 
 export const devicesMode = {
-    gateway_led: 3,
+    gateway_led: 4,
     garage_door: 7,
     wc_led: 21,
     yard_drying_rack: 25,
