@@ -83,5 +83,5 @@ export default StyleSheet.create({
     all_devices_val: {
         color: '#fff',
         marginTop: 5
-    }
+    },
 })

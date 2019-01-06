@@ -20,22 +20,31 @@ import {
     DeviceEventEmitter,
     FlatList,
     Image,
-    AppState
+    AppState,
+    AsyncStorage,
+    ScrollView
 } from "react-native";
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import LinearGradient from 'react-native-linear-gradient';
 import Header from "../../components/Header";
+import CreateScript from "../../components/CreateScript";
 import styles from './styles'
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../../actions/awsIoT'
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
     allDevicesStatusOn,
-    allDevicesStatusOff, deviceSensorMode, deviceElements, allRoom,
+    allDevicesStatusOff,
+    deviceSensorMode,
+    deviceElements,
+    allRoom,
+    allDevices
 } from '../../constants/devices';
 import navigator from 'navigators/CustomNavigator'
+
+
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
 
@@ -46,6 +55,11 @@ class AWSIoT extends Component {
     constructor(props) {
         super(props);
         this.handleMqttStatusChange = this.handleMqttStatusChange.bind(this)
+        this.state = {
+            isModal: false,
+            allDevices: allDevices,
+            selectedDevice: []
+        }
     }
 
     handleMqttStatusChange = (params) => {
@@ -61,11 +75,11 @@ class AWSIoT extends Component {
     };
 
 
-
     componentWillUnmount() {
     }
 
     componentDidMount() {
+
         if (!this.props.awsiot.connected) {
             if (isIOS) {
                 this.connectionStatus = AWSMqttEvents.addListener(
@@ -90,10 +104,17 @@ class AWSIoT extends Component {
     }
 
     _onPress = id => {
-
         navigator.navigate("RoomDetail", {
             roomId: id
         })
+    }
+
+    _openModal = () => {
+        this.setState({isModal: true})
+    }
+
+    _closeModal = () => {
+        this.setState({isModal: false})
     }
 
     _renderDevice = (data) => {
@@ -109,7 +130,7 @@ class AWSIoT extends Component {
             opacity: 0.2,
             x: 0,
             y: 0,
-            style:{
+            style: {
                 justifyContent: 'center',
                 alignItems: 'center',
             }
@@ -140,7 +161,8 @@ class AWSIoT extends Component {
         Object.values(deviceElements).forEach(item => allDevices += item.length);
         return (
             <View style={styles.container}>
-                <Header title="My Home"/>
+                <Header title="My Home"
+                        onClick={() => {this._openModal()}}/>
                 <LinearGradient start={{x: 1, y: 0}} end={{x: 0, y: 0}} colors={['#7D3C98', '#8E44AD', '#BB8FCE']}
                                 style={styles.intro}>
                     <View style={styles.intro_child}>
@@ -166,6 +188,10 @@ class AWSIoT extends Component {
                         }}
                     />
                 </View>
+                <CreateScript
+                    isOpen={this.state.isModal}
+                    onCloseModal={() => this._closeModal()}
+                />
             </View>
         );
     }

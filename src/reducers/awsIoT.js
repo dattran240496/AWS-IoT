@@ -3,9 +3,14 @@ import {
     UPDATE_DEVICE_STATUS,
     UPDATE_AWS_STATUS,
     UPDATE_SWITCH_DEVICE_STATUS,
-    UPDATE_DEVICE_MODE
+    UPDATE_DEVICE_MODE,
 } from "../actions/type";
-import {deviceElements, deviceStatusDefault, devicesMode} from "../constants/devices";
+import {
+    deviceElements,
+    deviceStatusDefault,
+    devicesMode,
+    deviceTimer
+} from "../constants/devices";
 
 const initialState = {
     deviceStatus: deviceStatusDefault,
@@ -13,6 +18,7 @@ const initialState = {
     connected: false,
     switchStatus: false,
     devicesMode: devicesMode,
+    deviceTimer: deviceTimer
 }
 export default (state = initialState, action) => {
     switch (action.type) {

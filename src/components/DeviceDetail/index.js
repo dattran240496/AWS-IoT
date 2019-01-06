@@ -8,10 +8,12 @@ import {
     DeviceEventEmitter,
     Platform,
     NativeEventEmitter,
-    DatePickerIOS,
+    Switch,
+    AsyncStorage
 } from 'react-native'
 import {connect} from 'react-redux'
 import _ from "lodash";
+import moment from 'moment'
 import Button from "../Button";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {
@@ -20,7 +22,7 @@ import {
     updateSwitchDeviceStatus,
     updateDeviceMode
 } from "../../actions/awsIoT";
-import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
+import {publish, subscribe, unsubscribe, onChangeStatus} from 'utils/mqttFunc';
 import {
     allDevices,
     allDevicesStatusOff,
@@ -30,6 +32,7 @@ import {
     modeConst
 } from "../../constants/devices";
 import {MESSAGE_TOPIC, STATUS_TOPIC} from '../../constants/topics'
+import {DATE_TIMER_FORMAT, isInt, isJSON} from '../../constants/common'
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
 import styles from './styles'
@@ -42,26 +45,10 @@ class DeviceDetail extends React.Component {
         this.state = {
             deviceId: props.navigation.getParam('deviceId'),
             deviceDetail: allDevices[props.navigation.getParam('deviceId')],
-            isDateTimePickerVisible: false,
+            isDatePickerVisible: false,
+            dateTimer: moment().format(DATE_TIMER_FORMAT),
+            isSwitchOn: false
         }
-    }
-
-    isJSON = str => {
-        try {
-            JSON.parse(str)
-        } catch (e) {
-            return false
-        }
-        return true
-    };
-
-    isInt = number => {
-        try {
-            parseInt(number)
-        } catch (e) {
-            return false
-        }
-        return true
     }
 
     _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -69,12 +56,15 @@ class DeviceDetail extends React.Component {
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
     _handleDatePicked = (date) => {
-        console.log('A date has been picked: ', date);
-        this._hideDateTimePicker();
+        this.setState({
+            dateTimer: moment(date).format(DATE_TIMER_FORMAT)
+        }, () => {
+            this._hideDateTimePicker();
+        })
     };
 
     handleMessage = (message) => {
-        if (this.isJSON(message)) {
+        if (isJSON(message)) {
             const data = JSON.parse(message);
             if (data.eventType) {
                 if (data.eventType === "disconnected") {
@@ -86,7 +76,7 @@ class DeviceDetail extends React.Component {
                 }
             }
         }
-        if (this.isInt(message)) {
+        if (isInt(message)) {
             const {deviceStatus, devicesMode} = this.props;
             switch (message) {
                 case "ON":
@@ -105,12 +95,11 @@ class DeviceDetail extends React.Component {
             if (newStatus) {
                 const deviceStatusKeys = Object.keys(deviceStatus);
                 const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (allDevicesStatusOff.indexOf(newStatus) >= 0) {
+                    if (Object.values(allDevicesStatusOff).indexOf(newStatus) >= 0) {
                         return deviceStatus[key] === newStatus - 1
                     }
-                    if (allDevicesStatusOn.indexOf(newStatus) >= 0) {
+                    if (Object.values(allDevicesStatusOn).indexOf(newStatus) >= 0) {
                         return deviceStatus[key] === newStatus + 1
-
                     }
                 });
                 const deviceModeKeys = Object.keys(devicesMode);
@@ -160,26 +149,26 @@ class DeviceDetail extends React.Component {
         )
     }
 
-    onChangeStatus = (id) => {
-        const {devices, deviceStatus} = this.props;
-
-        if (id === "switch") {
-            publish(MESSAGE_TOPIC, deviceStatus[id] === -1 ? "ON" : "OFF")
-        } else {
-            let status = null;
-            const deviceOnIdx = allDevicesStatusOn.indexOf(deviceStatus[id]);
-            if (deviceOnIdx >= 0) {
-                status = deviceStatus[id] + 1
-            }
-            const deviceOffIdx = allDevicesStatusOff.indexOf(deviceStatus[id]);
-            if (deviceOffIdx >= 0) {
-                status = deviceStatus[id] - 1
-            }
-            if (status) {
-                publish(MESSAGE_TOPIC, status.toString())
-            }
-        }
-    };
+    // onChangeStatus = (id) => {
+    //     const {devices, deviceStatus} = this.props;
+    //
+    //     if (id === "switch") {
+    //         publish(MESSAGE_TOPIC, deviceStatus[id] === -1 ? "ON" : "OFF")
+    //     } else {
+    //         let status = null;
+    //         const deviceOnIdx = allDevicesStatusOn.indexOf(deviceStatus[id]);
+    //         if (deviceOnIdx >= 0) {
+    //             status = deviceStatus[id] + 1
+    //         }
+    //         const deviceOffIdx = allDevicesStatusOff.indexOf(deviceStatus[id]);
+    //         if (deviceOffIdx >= 0) {
+    //             status = deviceStatus[id] - 1
+    //         }
+    //         if (status) {
+    //             publish(MESSAGE_TOPIC, status.toString())
+    //         }
+    //     }
+    // };
 
     onChangeMode = (id, mode) => {
         const {devicesMode} = this.props
@@ -196,6 +185,10 @@ class DeviceDetail extends React.Component {
             publish(MESSAGE_TOPIC, newMode.toString())
         }
 
+    }
+
+    onTimerChangeStatus = value => {
+        this.setState({isSwitchOn: value})
     }
 
     renderMode = () => {
@@ -241,8 +234,8 @@ class DeviceDetail extends React.Component {
         }
         const {deviceStatus} = this.props;
         let image = this.state.deviceDetail.image;
-        const isDeviceOn = allDevicesStatusOn.indexOf(deviceStatus[this.state.deviceId]) >= 0
-        if (this.state.deviceDetail.name === 'Lamp') {
+        const isDeviceOn = Object.values(allDevicesStatusOn).indexOf(deviceStatus[this.state.deviceId]) >= 0
+        if (this.state.deviceDetail.name.includes('Lamp')) {
             if (isDeviceOn) {
                 image = this.state.deviceDetail.detailImageOn
             } else image = this.state.deviceDetail.detailImageOff
@@ -260,12 +253,12 @@ class DeviceDetail extends React.Component {
                         buttonStyle={isDeviceOn ? {} : {backgroundColor: '#e1e1e1'}}
                         title={isDeviceOn ? 'ON' : 'OFF'}
                         onPress={() => {
-                            this.onChangeStatus(this.state.deviceId)
+                            onChangeStatus(this.state.deviceId, deviceStatus)
                         }}
                     />
                 </View>
                 <TouchableOpacity onPress={() => {
-                    this.onChangeStatus(this.state.deviceId)
+                    onChangeStatus(this.state.deviceId, deviceStatus)
                 }}>
                     <Image style={styles.image} source={image} resizeMode='contain'/>
                 </TouchableOpacity>
@@ -273,14 +266,23 @@ class DeviceDetail extends React.Component {
                 {isIOS && (
                     <View style={styles.mode_wrapper}>
                         <Text style={styles.mode_left_content}>Timer</Text>
-                        <View style={{flex: 3}}>
-                            <TouchableOpacity onPress={this._showDateTimePicker}>
-                                <Text>Show DatePicker</Text>
+                        <View style={styles.mode_right_content}>
+                            <TouchableOpacity style={{flex: 2}} onPress={this._showDateTimePicker}>
+                                <Text>{this.state.dateTimer}</Text>
                             </TouchableOpacity>
                             <DateTimePicker
+                                mode={'datetime'}
+                                titleIOS={'Timer'}
                                 isVisible={this.state.isDateTimePickerVisible}
                                 onConfirm={this._handleDatePicked}
                                 onCancel={this._hideDateTimePicker}
+                                is24Hour={false}
+                            />
+                            <Switch
+                                minimumDate={new Date()}
+                                style={{marginLeft: 15, flex: 1}}
+                                onValueChange={value => this.onTimerChangeStatus(value)}
+                                value={this.state.isSwitchOn}
                             />
                         </View>
                     </View>

@@ -11,6 +11,7 @@
     "aws-amplify": "^1.1.10",
     "aws-amplify-react": "^2.1.4",
     "lodash": "^4.17.11",
+    "moment": "^2.23.0",
     "native-base": "^2.8.1",
     "prop-types": "^15.6.2",
     "react": "16.6.1",

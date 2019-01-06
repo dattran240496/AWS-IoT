@@ -1,3 +1,6 @@
+import moment from 'moment'
+import {DATE_TIMER_FORMAT} from './common'
+
 export const GATEWAY_FENCE_ON = 1;
 export const GATEWAY_LED_ON = 5;
 export const GARAGE_DOOR_ON = 9;
@@ -49,7 +52,7 @@ export const allRoom = {
     },
     bed_room: {
         id: 'bed_room',
-        name: 'Bed Room',
+        name: 'Bedroom',
         image: require("assets/icons/bedroom.png"),
     }
 
@@ -62,21 +65,21 @@ export const allDevices = {
         detailName: "Switch",
         image: require("assets/icons/outlet-power.png"),
         isMode: false,
-        roomId: 'switch'
+        roomId: 'switch',
     },
     gateway_fence: {
         id: 'gateway_fence',
-        name: "Fence",
+        name: "Gateway Fence",
         detailName: "Fence",
         image: require("assets/icons/gateway.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
-        roomId: 'gateway'
+        roomId: 'gateway',
     },
     gateway_led: {
         id: "gateway_led",
-        name: "Lamp",
+        name: "Gateway Lamp",
         image: require("assets/icons/lamps.png"),
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -86,7 +89,7 @@ export const allDevices = {
     },
     garage_door: {
         id: 'garage_door',
-        name: "Door",
+        name: "Garage Door",
         detailName: "Door",
         image: require("assets/icons/door.jpeg"),
         isMode: true,
@@ -95,7 +98,7 @@ export const allDevices = {
     },
     garage_led: {
         id: "garage_led",
-        name: "Lamp",
+        name: "Garage Lamp",
         image: require("assets/icons/lamps.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -104,7 +107,7 @@ export const allDevices = {
     },
     living_room_door: {
         id: "living_room_door",
-        name: "Door",
+        name: "Living Room Door",
         detailName: "Door",
         image: require("assets/icons/door.jpeg"),
         isMode: false,
@@ -112,7 +115,7 @@ export const allDevices = {
     },
     living_room_led: {
         id: "living_room_led",
-        name: "Lamp",
+        name: "Living Room Lamp",
         image: require("assets/icons/lamps.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -121,7 +124,7 @@ export const allDevices = {
     },
     kitchen_window: {
         id: "kitchen_window",
-        name: "Window",
+        name: "Kitchen Window",
         detailName: "Window",
         image: require("assets/icons/window.png"),
         isMode: false,
@@ -129,7 +132,7 @@ export const allDevices = {
     },
     kitchen_led: {
         id: "kitchen_led",
-        name: "Lamp",
+        name: "Kitchen Lamp",
         image: require("assets/icons/lamps.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -138,7 +141,7 @@ export const allDevices = {
     },
     wc_led: {
         id: 'wc_led',
-        name: 'Lamp',
+        name: 'Toilet Lamp',
         image: require("assets/icons/lamps.png"),
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -157,7 +160,7 @@ export const allDevices = {
     },
     bed_room_led: {
         id: 'bed_room_led',
-        name: 'Lamp',
+        name: 'Bedroom Lamp',
         image: require("assets/icons/lamps.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
@@ -166,7 +169,7 @@ export const allDevices = {
     },
     bed_room_fan: {
         id: 'bed_room_fan',
-        name: 'Fan',
+        name: 'Bedroom Fan',
         detailName: 'Fan',
         image: require("assets/icons/fan.png"),
         isMode: false,
@@ -234,6 +237,7 @@ export const deviceElements = {
     kitchen: [
         {
             id: "kitchen_window",
+            parentId: 'kitchen'
         },
         {
             id: "kitchen_led",
@@ -254,41 +258,43 @@ export const deviceElements = {
             id: 'bed_room_led',
         },
         {
-            id: 'bed_room_fan'
+            id: 'bed_room_fan',
         }
     ]
 
 }
 
-export const allDevicesStatusOn = [
-    GATEWAY_FENCE_ON,
-    GATEWAY_LED_ON,
-    GARAGE_DOOR_ON,
-    GARAGE_LED_ON,
-    LIVING_ROOM_DOOR_ON,
-    LIVING_ROOM_LED_ON,
-    KITCHEN_WINDOW_ON,
-    KITCHEN_LED_ON,
-    WC_LED_ON,
-    YARD_DRYING_RACK_ON,
-    BED_ROOM_LED_ON,
-    BED_ROM_FAN_ON
-];
+export const allDevicesStatusOn = {
+    gateway_fence: GATEWAY_FENCE_ON,
+    gateway_led: GATEWAY_LED_ON,
+    garage_door: GARAGE_DOOR_ON,
+    garage_led: GARAGE_LED_ON,
+    living_room_door: LIVING_ROOM_DOOR_ON,
+    living_room_led: LIVING_ROOM_LED_ON,
+    kitchen_window: KITCHEN_WINDOW_ON,
+    kitchen_led: KITCHEN_LED_ON,
+    wc_led: WC_LED_ON,
+    yard_drying_rack: YARD_DRYING_RACK_ON,
+    bed_room_led: BED_ROOM_LED_ON,
+    bed_room_fan: BED_ROM_FAN_ON,
+    switch: 0
+};
 
-export const allDevicesStatusOff = [
-    GATEWAY_FENCE_ON + 1,
-    GATEWAY_LED_ON + 1,
-    GARAGE_DOOR_ON + 1,
-    GARAGE_LED_ON + 1,
-    LIVING_ROOM_DOOR_ON + 1,
-    LIVING_ROOM_LED_ON + 1,
-    KITCHEN_WINDOW_ON + 1,
-    KITCHEN_LED_ON + 1,
-    WC_LED_ON + 1,
-    YARD_DRYING_RACK_ON + 1,
-    BED_ROOM_LED_ON + 1,
-    BED_ROM_FAN_ON + 1
-];
+export const allDevicesStatusOff = {
+    gateway_fence: GATEWAY_FENCE_ON + 1,
+    gateway_led: GATEWAY_LED_ON + 1,
+    garage_door: GARAGE_DOOR_ON + 1,
+    garage_led: GARAGE_LED_ON + 1,
+    living_room_door: LIVING_ROOM_DOOR_ON + 1,
+    living_room_led: LIVING_ROOM_LED_ON + 1,
+    kitchen_window: KITCHEN_WINDOW_ON + 1,
+    kitchen_led: KITCHEN_LED_ON + 1,
+    wc_led: WC_LED_ON + 1,
+    yard_drying_rack: YARD_DRYING_RACK_ON + 1,
+    bed_room_led: BED_ROOM_LED_ON + 1,
+    bed_room_fan: BED_ROM_FAN_ON + 1,
+    switch: -1
+};
 
 export const devicesMode = {
     gateway_led: 3,
@@ -299,3 +305,58 @@ export const devicesMode = {
 
 export const deviceSensorMode = [3, 7, 21, 25];
 export const deviceButtonMode = [4, 8, 22, 26];
+
+export const deviceTimer = {
+    switch: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    gateway_fence: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    gateway_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    garage_door: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    garage_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    living_room_door: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    living_room_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    kitchen_window: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    kitchen_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    wc_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    yard_drying_rack: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    bed_room_led: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+    bed_room_fan: {
+        isON: false,
+        timer: moment().format(DATE_TIMER_FORMAT)
+    },
+}

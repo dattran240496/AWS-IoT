@@ -50,5 +50,6 @@ export default StyleSheet.create({
     mode_right_content: {
         flex: 3,
         flexDirection: 'row',
+        alignItems: 'center'
     }
 })
