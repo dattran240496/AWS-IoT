@@ -49,7 +49,7 @@ function getCurrentRoute() {
     if (!_container || !_container.state.nav) {
         return null
     }
-
+w
     return _container.state.nav.routes[_container.state.nav.index] || null
 }
 

@@ -25,7 +25,6 @@ import {
     ScrollView
 } from "react-native";
 import {connect} from 'react-redux'
-import _ from 'lodash'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import LinearGradient from 'react-native-linear-gradient';
 import Header from "../../components/Header";
@@ -35,8 +34,6 @@ import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../../actions/awsIoT'
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
-    allDevicesStatusOn,
-    allDevicesStatusOff,
     deviceSensorMode,
     deviceElements,
     allRoom,
@@ -63,7 +60,6 @@ class AWSIoT extends Component {
     }
 
     handleMqttStatusChange = (params) => {
-        console.log('params', params)
         if (params.status === 2) {
             this.props.onUpdateAWSStatus(true);
             subscribe(MESSAGE_TOPIC);
@@ -162,7 +158,7 @@ class AWSIoT extends Component {
         return (
             <View style={styles.container}>
                 <Header title="My Home"
-                        onClick={() => {this._openModal()}}/>
+                        onClick={() => {this.props.navigation.navigate('ScriptList')}}/>
                 <LinearGradient start={{x: 1, y: 0}} end={{x: 0, y: 0}} colors={['#7D3C98', '#8E44AD', '#BB8FCE']}
                                 style={styles.intro}>
                     <View style={styles.intro_child}>
@@ -188,10 +184,10 @@ class AWSIoT extends Component {
                         }}
                     />
                 </View>
-                <CreateScript
-                    isOpen={this.state.isModal}
-                    onCloseModal={() => this._closeModal()}
-                />
+                {/*<CreateScript*/}
+                    {/*isOpen={this.state.isModal}*/}
+                    {/*onCloseModal={() => this._closeModal()}*/}
+                {/*/>*/}
             </View>
         );
     }

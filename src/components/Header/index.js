@@ -19,6 +19,7 @@ export default class Header extends React.Component {
     }
 
     render() {
+        console.log('zzz this.props', this.props)
         return (
             <View style={styles.container}>
                 {/*<TouchableOpacity*/}
@@ -33,6 +34,7 @@ export default class Header extends React.Component {
                 <Text style={styles.title}>
                     {this.props.title}
                 </Text>
+
                 <TouchableOpacity onPress={() => {
                     this.props.onClick()
                 }}>

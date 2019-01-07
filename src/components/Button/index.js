@@ -11,7 +11,8 @@ export default class Button extends React.Component {
         buttonStyle: PropTypes.oneOfType([PropTypes.number, PropTypes.instanceOf(Object)]),
         title: PropTypes.string,
         onPress: PropTypes.func,
-        colors: PropTypes.array
+        colors: PropTypes.array,
+        titleStyle: PropTypes.oneOfType([PropTypes.number, PropTypes.instanceOf(Object)]),
     };
 
     static defaultProps = {
@@ -19,7 +20,8 @@ export default class Button extends React.Component {
         title: '',
         onPress: () => {
         },
-        colors: ['#A569BD', '#8E44AD', '#6C3483']
+        colors: ['#A569BD', '#8E44AD', '#6C3483'],
+        titleStyle: {}
     };
 
     render() {
@@ -32,7 +34,7 @@ export default class Button extends React.Component {
                     colors={this.props.colors ? this.props.colors : Button.defaultProps.colors}
                     style={[styles.container, this.props.buttonStyle]}
                 >
-                    <Text style={styles.title}>{this.props.title}</Text>
+                    <Text style={[styles.title, this.props.titleStyle]}>{this.props.title}</Text>
                 </LinearGradient>
             </TouchableOpacity>
 
