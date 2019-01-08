@@ -44,7 +44,10 @@ export default StyleSheet.create({
         marginLeft: 15,
         fontSize: 15,
         fontWeight: '500',
-        flex: 1
+    },
+    itemImage: {
+        width: 40,
+        height: 40
     },
     itemDevicesCount: {
         marginTop: 5,
@@ -63,10 +66,6 @@ export default StyleSheet.create({
         color: '#7F8C8D',
     },
     checkBox: {
-        //position: 'absolute',
-        //top: 0,
-        //right: -5,
-        //zIndex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         width: 40,
@@ -79,12 +78,12 @@ export default StyleSheet.create({
         width: 35,
         height: 35,
     },
-
     deviceItem: {
         height: 50,
         width: width - 40,
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     closeImg: {
         width: 15,

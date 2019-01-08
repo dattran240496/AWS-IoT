@@ -1,4 +1,10 @@
-import {UPDATE_DEVICE_STATUS, UPDATE_AWS_STATUS, UPDATE_SWITCH_DEVICE_STATUS, UPDATE_DEVICE_MODE} from "./type";
+import {
+    UPDATE_DEVICE_STATUS,
+    UPDATE_AWS_STATUS,
+    UPDATE_SWITCH_DEVICE_STATUS,
+    UPDATE_DEVICE_MODE,
+    UPDATE_SCRIPT
+} from "./type";
 
 export const updateDeviceStatus = params => {
     return {
@@ -24,6 +30,13 @@ export const updateSwitchDeviceStatus = params => {
 export const updateDeviceMode = params => {
     return {
         type: UPDATE_DEVICE_MODE,
+        params
+    }
+}
+
+export const updateScript = params => {
+    return {
+        type: UPDATE_SCRIPT,
         params
     }
 }

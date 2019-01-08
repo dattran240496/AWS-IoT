@@ -19,7 +19,6 @@ export default class Header extends React.Component {
     }
 
     render() {
-        console.log('zzz this.props', this.props)
         return (
             <View style={styles.container}>
                 {/*<TouchableOpacity*/}

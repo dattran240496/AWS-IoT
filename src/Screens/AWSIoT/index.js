@@ -28,8 +28,6 @@ import {connect} from 'react-redux'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import LinearGradient from 'react-native-linear-gradient';
 import Header from "../../components/Header";
-import CreateScript from "../../components/CreateScript";
-import styles from './styles'
 import {publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus} from '../../actions/awsIoT'
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
@@ -40,7 +38,7 @@ import {
     allDevices
 } from '../../constants/devices';
 import navigator from 'navigators/CustomNavigator'
-
+import styles from './styles'
 
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
@@ -115,8 +113,6 @@ class AWSIoT extends Component {
 
     _renderDevice = (data) => {
         const {deviceStatus, devicesMode} = this.props;
-        const currentMode = devicesMode[data.id];
-        const isMode = deviceSensorMode.indexOf(currentMode) >= 0;
         const shadowOpt = {
             width: width / 2 - 20,
             height: width / 2 - 20,

@@ -95,22 +95,22 @@ class DeviceDetail extends React.Component {
             if (newStatus) {
                 const deviceStatusKeys = Object.keys(deviceStatus);
                 const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (Object.values(allDevicesStatusOff).indexOf(newStatus) >= 0) {
-                        return deviceStatus[key] === newStatus - 1
+                    if (allDevicesStatusOff[key] === newStatus) {
+                        return allDevicesStatusOff[key] === newStatus
                     }
-                    if (Object.values(allDevicesStatusOn).indexOf(newStatus) >= 0) {
-                        return deviceStatus[key] === newStatus + 1
+                    if (allDevicesStatusOn[key] === newStatus) {
+                        return allDevicesStatusOn[key] === newStatus
                     }
                 });
                 const deviceModeKeys = Object.keys(devicesMode);
                 const changedMode = _.find(deviceModeKeys, key => {
-                    const deviceSensorModeIdx = deviceSensorMode.indexOf(devicesMode[key]);
-                    if (deviceSensorModeIdx >= 0) {
-                        return devicesMode[key] === newStatus - 1
+                    const deviceSensorModeIdx = deviceSensorMode[key] === newStatus;
+                    if (deviceSensorModeIdx) {
+                        return deviceSensorModeIdx
                     }
-                    const deviceButtonModeIdx = deviceButtonMode.indexOf(devicesMode[key]);
-                    if (deviceButtonModeIdx >= 0) {
-                        return devicesMode[key] === newStatus + 1
+                    const deviceButtonModeIdx = deviceButtonMode[key] === newStatus;
+                    if (deviceButtonModeIdx) {
+                        return deviceButtonModeIdx
                     }
                 })
                 if (changedDevice) {
@@ -173,12 +173,12 @@ class DeviceDetail extends React.Component {
     onChangeMode = (id, mode) => {
         const {devicesMode} = this.props
         let newMode = null
-        const deviceSensorModeIdx = deviceSensorMode.indexOf(devicesMode[id]);
-        if (deviceSensorModeIdx >= 0 && mode === 'button') {
+        const deviceSensorModeIdx = deviceSensorMode[id] === devicesMode[id];
+        if (deviceSensorModeIdx && mode === 'button') {
             newMode = devicesMode[id] + 1
         }
-        const deviceButtonModeIdx = deviceButtonMode.indexOf(devicesMode[id]);
-        if (deviceButtonModeIdx >= 0 && mode === 'sensor') {
+        const deviceButtonModeIdx = deviceButtonMode[id] === devicesMode[id];
+        if (deviceButtonModeIdx && mode === 'sensor') {
             newMode = devicesMode[id] - 1
         }
         if (newMode) {
@@ -198,8 +198,10 @@ class DeviceDetail extends React.Component {
                 <Text style={styles.mode_left_content}>Mode</Text>
                 <View style={styles.mode_right_content}>
                     {this.state.deviceDetail.mode.map((item, index) => {
-                        const isSensorMode = deviceSensorMode.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'sensor'
-                        const isButtonMode = deviceButtonMode.indexOf(devicesMode[this.state.deviceId]) >= 0 && item === 'button'
+                        const isSensorMode = deviceSensorMode[this.state.deviceId] === devicesMode[this.state.deviceId]
+                            && item === 'sensor'
+                        const isButtonMode = deviceButtonMode[this.state.deviceId] === devicesMode[this.state.deviceId]
+                            && item === 'button'
                         return (
                             <Button
                                 key={index}
@@ -234,7 +236,7 @@ class DeviceDetail extends React.Component {
         }
         const {deviceStatus} = this.props;
         let image = this.state.deviceDetail.image;
-        const isDeviceOn = Object.values(allDevicesStatusOn).indexOf(deviceStatus[this.state.deviceId]) >= 0
+        const isDeviceOn = allDevicesStatusOn[this.state.deviceId] === deviceStatus[this.state.deviceId]
         if (this.state.deviceDetail.name.includes('Lamp')) {
             if (isDeviceOn) {
                 image = this.state.deviceDetail.detailImageOn
@@ -263,7 +265,7 @@ class DeviceDetail extends React.Component {
                     <Image style={styles.image} source={image} resizeMode='contain'/>
                 </TouchableOpacity>
                 {this.state.deviceDetail.isMode && this.renderMode()}
-                {isIOS && (
+                {false && (
                     <View style={styles.mode_wrapper}>
                         <Text style={styles.mode_left_content}>Timer</Text>
                         <View style={styles.mode_right_content}>

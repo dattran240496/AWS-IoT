@@ -1,6 +1,8 @@
 import {NativeEventEmitter, NativeModules, Platform} from "react-native";
-import {MESSAGE_TOPIC} from "../constants/topics";
-import {allDevicesStatusOff, allDevicesStatusOn} from "../constants/devices";
+import {MESSAGE_TOPIC, STATUS_TOPIC} from "../constants/topics";
+import {allDevicesStatusOff, allDevicesStatusOn, deviceButtonMode, deviceSensorMode} from "../constants/devices";
+import {isInt, isJSON} from "../constants/common";
+import _ from "lodash";
 const isIOS = Platform.OS === "ios"
 const { IoTModule } = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
@@ -30,17 +32,16 @@ export const unsubscribeAllTopic = () => {
 }
 
 export const onChangeStatus = (id, deviceStatus) => {
-
     if (id === "switch") {
         publish(MESSAGE_TOPIC, deviceStatus[id] === -1 ? "ON" : "OFF")
     } else {
         let status = null;
-        const deviceOnIdx = Object.values(allDevicesStatusOn).indexOf(deviceStatus[id]);
-        if (deviceOnIdx >= 0) {
+        const deviceOnIdx = allDevicesStatusOn[id] === deviceStatus[id];
+        if (deviceOnIdx) {
             status = deviceStatus[id] + 1
         }
-        const deviceOffIdx = Object.values(allDevicesStatusOff).indexOf(deviceStatus[id]);
-        if (deviceOffIdx >= 0) {
+        const deviceOffIdx = allDevicesStatusOff[id] === deviceStatus[id];
+        if (deviceOffIdx) {
             status = deviceStatus[id] - 1
         }
         if (status) {

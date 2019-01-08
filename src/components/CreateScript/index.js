@@ -30,7 +30,13 @@ import _ from 'lodash'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import styles from './styles'
 import {publish, subscribe, unsubscribe, onChangeStatus} from 'utils/mqttFunc';
-import {updateDeviceStatus, updateAWSStatus, updateSwitchDeviceStatus, updateDeviceMode} from '../../actions/awsIoT'
+import {
+    updateDeviceStatus,
+    updateAWSStatus,
+    updateSwitchDeviceStatus,
+    updateDeviceMode,
+    updateScript
+} from '../../actions/awsIoT'
 import {
     allDevicesStatusOn,
     allDevicesStatusOff,
@@ -100,7 +106,6 @@ class CreateScript extends Component {
     }
 
     handleMessage = (message) => {
-        console.log('zzz mess', message)
         if (isJSON(message)) {
             const data = JSON.parse(message);
             if (data.eventType) {
@@ -132,20 +137,20 @@ class CreateScript extends Component {
             if (newStatus) {
                 const deviceStatusKeys = Object.keys(deviceStatus);
                 const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (Object.values(allDevicesStatusOff).indexOf(newStatus) >= 0) {
+                    if (allDevicesStatusOff[newStatus]) {
                         return deviceStatus[key] === newStatus - 1
                     }
-                    if (Object.values(allDevicesStatusOn).indexOf(newStatus) >= 0) {
+                    if (allDevicesStatusOn[newStatus]) {
                         return deviceStatus[key] === newStatus + 1
                     }
                 });
                 const deviceModeKeys = Object.keys(devicesMode);
                 const changedMode = _.find(deviceModeKeys, key => {
-                    const deviceSensorModeIdx = deviceSensorMode.indexOf(devicesMode[key]);
+                    const deviceSensorModeIdx = deviceSensorMode[devicesMode[key]];
                     if (deviceSensorModeIdx >= 0) {
                         return devicesMode[key] === newStatus - 1
                     }
-                    const deviceButtonModeIdx = deviceButtonMode.indexOf(devicesMode[key]);
+                    const deviceButtonModeIdx = deviceButtonMode[devicesMode[key]];
                     if (deviceButtonModeIdx >= 0) {
                         return devicesMode[key] === newStatus + 1
                     }
@@ -173,12 +178,22 @@ class CreateScript extends Component {
             const value = await AsyncStorage.getItem('scriptList');
             if (value !== null) {
                 // We have data!!
-                console.log(value);
+                if (this.state.scriptName !== '') {
+                    var script = JSON.parse(value)
+                }
             } else {
-
+                if (this.state.scriptName !== '') {
+                    var script = {};
+                }
             }
+            const param = {[this.state.scriptName]: this.state.selectedDevice}
+            this.props.onUpdateScript(param)
+            const newScript = Object.assign(param, script)
+            // await AsyncStorage.setItem('scriptList', JSON.stringify(newScript));
+            this.props.navigation.pop()
         } catch (error) {
             // Error retrieving data
+            console.log(error)
         }
     }
 
@@ -186,6 +201,14 @@ class CreateScript extends Component {
         const isChecked = _.find(this.state.selectedDevice, o => o.id === device.id)
         return (
             <View key={device.id} style={styles.deviceItem}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Image
+                        style={styles.itemImage}
+                        source={device.image}
+                        resizeMode='contain'
+                    />
+                    <Text style={styles.itemName}>{device.name}</Text>
+                </View>
                 <TouchableOpacity
                     style={styles.checkBox}
                     onPress={() => {
@@ -197,26 +220,10 @@ class CreateScript extends Component {
                             currentSelectedDevices.push(device)
                         }
 
-                        // _.remove(currentAllDevices[parent], o => o.id === device.id)
-
                         this.setState({
                             selectedDevice: currentSelectedDevices,
                             allDevices: currentAllDevices
                         })
-                        // const currentAllDevices = this.state.allDevices;
-                        // const currentSelectedDevices = this.state.selectedDevice;
-                        // _.remove(currentSelectedDevices, o => o.id === device.id);
-                        // if (!currentAllDevices[device.roomId]) {
-                        //     currentAllDevices[device.roomId] = [];
-                        // }
-                        // currentAllDevices[device.roomId].push({
-                        //     id: device.id,
-                        //     parentId: device.roomId
-                        // });
-                        // this.setState({
-                        //     selectedDevice: currentSelectedDevices,
-                        //     allDevices: currentAllDevices
-                        // })
                     }}
                 >
                     {isChecked &&
@@ -226,7 +233,6 @@ class CreateScript extends Component {
                         resizeMode={'contain'}
                     />}
                 </TouchableOpacity>
-                <Text style={styles.itemName}>{device.name}</Text>
             </View>
         )
     }
@@ -235,23 +241,24 @@ class CreateScript extends Component {
         return (
             <View key={device.id} style={styles.deviceItem}>
                 {isDeleteItem && (
-                    <TouchableOpacity style={styles.closeBtn}
-                                      onPress={() => {
-                                          const currentAllDevices = this.state.allDevices;
-                                          const currentSelectedDevices = this.state.selectedDevice;
-                                          _.remove(currentSelectedDevices, o => o.id === device.id);
-                                          if (!currentAllDevices[device.roomId]) {
-                                              currentAllDevices[device.roomId] = [];
-                                          }
-                                          currentAllDevices[device.roomId].push({
-                                              id: device.id,
-                                              parentId: device.roomId
-                                          });
-                                          this.setState({
-                                              selectedDevice: currentSelectedDevices,
-                                              allDevices: currentAllDevices
-                                          })
-                                      }}
+                    <TouchableOpacity
+                        style={styles.closeBtn}
+                        onPress={() => {
+                            const currentAllDevices = this.state.allDevices;
+                            const currentSelectedDevices = this.state.selectedDevice;
+                            _.remove(currentSelectedDevices, o => o.id === device.id);
+                            if (!currentAllDevices[device.roomId]) {
+                                currentAllDevices[device.roomId] = [];
+                            }
+                            currentAllDevices[device.roomId].push({
+                                id: device.id,
+                                parentId: device.roomId
+                            });
+                            this.setState({
+                                selectedDevice: currentSelectedDevices,
+                                allDevices: currentAllDevices
+                            })
+                        }}
                     >
                         <Icon name='times-circle' color={'#e1e1e1'} size={24}/>
                     </TouchableOpacity>
@@ -284,15 +291,10 @@ class CreateScript extends Component {
     }
 
     render() {
-        const {deviceStatus} = this.props;
-        // let allDevices = 0;
-        // Object.values(deviceElements).forEach(item => allDevicesModal += item.length);
-        // let allDevicesModal = [];
         return (
             <View style={styles.modal}>
                 <View style={{flex: 1}}>
                     <TouchableOpacity onPress={() => {
-                        // this._closeModal()
                         this.props.navigation.goBack()
                     }}>
                         <Image source={require('assets/icons/arrow_left.png')}
@@ -333,7 +335,7 @@ class CreateScript extends Component {
                                 // this.state.selectedDevice.forEach(item => {
                                 //     onChangeStatus(item.id, deviceStatus)
                                 // })
-
+                                this._createScript()
                             }}
                         />
                         {/*<Button buttonStyle={[styles.controlBtn, {marginLeft: 5}]} title='OFF' />*/}
@@ -358,6 +360,7 @@ const mapDispatchToProps = dispatch => ({
     onUpdateAWSStatus: params => dispatch(updateAWSStatus(params)),
     onUpdateSwitchDeviceStatus: params => dispatch(updateSwitchDeviceStatus(params)),
     onUpdateDeviceMode: params => dispatch(updateDeviceMode(params)),
+    onUpdateScript: params => dispatch(updateScript(params))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateScript)

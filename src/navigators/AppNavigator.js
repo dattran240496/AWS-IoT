@@ -4,6 +4,7 @@ import RoomDetail from '../components/RoomDetail'
 import AWSIoT from "../Screens/AWSIoT";
 import CreateScript from "../components/CreateScript";
 import ScriptList from "../components/Script/ScriptList";
+import ScriptDetail from "../components/Script/ScriptDetail";
 const Script = createStackNavigator(
     {
         ScriptList: {
@@ -14,6 +15,12 @@ const Script = createStackNavigator(
         },
         CreateScript: {
             screen: CreateScript,
+            navigationOptions: {
+                header: null,
+            },
+        },
+        ScriptDetail: {
+            screen: ScriptDetail,
             navigationOptions: {
                 header: null,
             },

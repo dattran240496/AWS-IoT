@@ -1,8 +1,14 @@
-import {StyleSheet} from 'react-native'
+import {StyleSheet, Dimensions} from 'react-native'
+const {width, height} = Dimensions.get('window')
 export default StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: '500',
+        textAlign: 'center'
     },
     modal_close: {
         width: 25,
@@ -19,5 +25,15 @@ export default StyleSheet.create({
         textAlign: 'center',
         bottom: 4,
         left: 1,
+    },
+    scriptItem: {
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderBottomColor: '#e1e1e1',
+        borderBottomWidth: 1,
+        width: width - 40
+    },
+    scriptName: {
+        fontSize: 15
     }
 })

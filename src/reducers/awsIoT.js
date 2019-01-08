@@ -4,6 +4,7 @@ import {
     UPDATE_AWS_STATUS,
     UPDATE_SWITCH_DEVICE_STATUS,
     UPDATE_DEVICE_MODE,
+    UPDATE_SCRIPT
 } from "../actions/type";
 import {
     deviceElements,
@@ -18,7 +19,8 @@ const initialState = {
     connected: false,
     switchStatus: false,
     devicesMode: devicesMode,
-    deviceTimer: deviceTimer
+    deviceTimer: deviceTimer,
+    scriptList: {}
 }
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -52,6 +54,14 @@ export default (state = initialState, action) => {
                 ...state,
                 devicesMode: {
                     ...state.devicesMode,
+                    ...action.params
+                }
+            };
+        case UPDATE_SCRIPT:
+            return {
+                ...state,
+                scriptList: {
+                    ...state.scriptList,
                     ...action.params
                 }
             };

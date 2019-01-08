@@ -80,7 +80,8 @@ export const allDevices = {
     gateway_led: {
         id: "gateway_led",
         name: "Gateway Lamp",
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -99,7 +100,8 @@ export const allDevices = {
     garage_led: {
         id: "garage_led",
         name: "Garage Lamp",
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -116,7 +118,8 @@ export const allDevices = {
     living_room_led: {
         id: "living_room_led",
         name: "Living Room Lamp",
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -133,7 +136,8 @@ export const allDevices = {
     kitchen_led: {
         id: "kitchen_led",
         name: "Kitchen Lamp",
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -142,7 +146,8 @@ export const allDevices = {
     wc_led: {
         id: 'wc_led',
         name: 'Toilet Lamp',
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: true,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -161,7 +166,8 @@ export const allDevices = {
     bed_room_led: {
         id: 'bed_room_led',
         name: 'Bedroom Lamp',
-        image: require("assets/icons/lamps.png"),
+        image: require("assets/icons/lamp-on.png"),
+        imageOff: require("assets/icons/lamp-off.png"),
         isMode: false,
         detailImageOn: require("assets/icons/lighting-on.png"),
         detailImageOff: require("assets/icons/lighting-off.png"),
@@ -303,8 +309,18 @@ export const devicesMode = {
     yard_drying_rack: 25,
 };
 
-export const deviceSensorMode = [3, 7, 21, 25];
-export const deviceButtonMode = [4, 8, 22, 26];
+export const deviceSensorMode = {
+    gateway_led: 3,
+    garage_door: 7,
+    wc_led: 21,
+    yard_drying_rack: 25,
+};
+export const deviceButtonMode = {
+    gateway_led: 4,
+    garage_door: 8,
+    wc_led: 22,
+    yard_drying_rack: 26,
+};
 
 export const deviceTimer = {
     switch: {
