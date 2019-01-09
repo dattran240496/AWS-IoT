@@ -72,7 +72,8 @@ export default StyleSheet.create({
         height: 40,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: '#e1e1e1'
+        borderColor: '#e1e1e1',
+        marginLeft: 10
     },
     iconCheck: {
         width: 35,
@@ -107,5 +108,9 @@ export default StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
         padding: 5
+    },
+    rightContent: {
+        flexDirection: 'row',
+        alignItems: 'center'
     }
 })

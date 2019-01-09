@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import {connect} from "react-redux";
 import navigator from 'navigators/CustomNavigator'
-import {publish, onChangeStatus} from 'utils/mqttFunc';
+import {publish} from 'utils/mqttFunc';
 import {
     allRoom,
     deviceElements,
@@ -39,80 +39,6 @@ class RoomDetail extends React.Component {
         super(props);
         this.state = {
             roomId: props.navigation.getParam('roomId')
-        }
-    }
-
-    componentDidMount() {
-        if (this.props.awsiot.connected) {
-            if (isIOS) {
-                this.message = AWSMqttEvents.addListener("message", this.handleMessage);
-            } else {
-                DeviceEventEmitter.addListener("Status", this.handleMqttStatusChange);
-            }
-        }
-    }
-
-    handleMessage = (message) => {
-        if (isJSON(message)) {
-            const data = JSON.parse(message);
-            if (data.eventType) {
-                if (data.eventType === "disconnected") {
-                    this.props.onUpdateSwitchDeviceStatus(false);
-                    this.props.onUpdateDeviceStatus({switch: -1})
-                } else if (data.eventType === "connected") {
-                    this.props.onUpdateSwitchDeviceStatus(true);
-                    publish(STATUS_TOPIC, "STATUS")
-                }
-            }
-        }
-        if (isInt(message)) {
-            const {deviceStatus, devicesMode} = this.props;
-            switch (message) {
-                case "ON":
-                    this.props.onUpdateDeviceStatus({switch: 0});
-                    break;
-                case "OFF":
-                    this.props.onUpdateDeviceStatus({switch: -1});
-                    break;
-                case "Device connected!":
-                    this.props.onUpdateSwitchDeviceStatus(true);
-                    break;
-                default:
-                    break
-            }
-            const newStatus = parseInt(message);
-            if (newStatus) {
-                const deviceStatusKeys = Object.keys(deviceStatus);
-                const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (allDevicesStatusOff[key] === newStatus) {
-                        return allDevicesStatusOff[key] === newStatus
-                    }
-                    if (allDevicesStatusOn[key] === newStatus) {
-                        return allDevicesStatusOn[key] === newStatus
-                    }
-                });
-                const deviceModeKeys = Object.keys(devicesMode);
-                const changedMode = _.find(deviceModeKeys, key => {
-                    const deviceSensorModeIdx = deviceSensorMode[key] === newStatus;
-                    if (deviceSensorModeIdx) {
-                        return deviceSensorModeIdx
-                    }
-                    const deviceButtonModeIdx = deviceButtonMode[key] === newStatus;
-                    if (deviceButtonModeIdx) {
-                        return deviceButtonModeIdx
-                    }
-                })
-                if (changedDevice) {
-                    this.props.onUpdateDeviceStatus({
-                        [changedDevice]: newStatus
-                    })
-                }
-                if (changedMode) {
-                    this.props.onUpdateDeviceMode({
-                        [changedMode]: newStatus
-                    })
-                }
-            }
         }
     }
 

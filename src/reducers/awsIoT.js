@@ -4,7 +4,8 @@ import {
     UPDATE_AWS_STATUS,
     UPDATE_SWITCH_DEVICE_STATUS,
     UPDATE_DEVICE_MODE,
-    UPDATE_SCRIPT
+    UPDATE_SCRIPT,
+    DELETE_SCRIPT
 } from "../actions/type";
 import {
     deviceElements,
@@ -12,7 +13,7 @@ import {
     devicesMode,
     deviceTimer
 } from "../constants/devices";
-
+import _ from 'lodash'
 const initialState = {
     deviceStatus: deviceStatusDefault,
     devices: [],
@@ -65,6 +66,14 @@ export default (state = initialState, action) => {
                     ...action.params
                 }
             };
+        case DELETE_SCRIPT: {
+            const currentScript = state.scriptList;
+            delete currentScript[action.params]
+            return {
+                ...state,
+                scriptList: currentScript
+            }
+        }
         default:
             return {
                 ...state

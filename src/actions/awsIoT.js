@@ -3,7 +3,8 @@ import {
     UPDATE_AWS_STATUS,
     UPDATE_SWITCH_DEVICE_STATUS,
     UPDATE_DEVICE_MODE,
-    UPDATE_SCRIPT
+    UPDATE_SCRIPT,
+    DELETE_SCRIPT
 } from "./type";
 
 export const updateDeviceStatus = params => {
@@ -37,6 +38,13 @@ export const updateDeviceMode = params => {
 export const updateScript = params => {
     return {
         type: UPDATE_SCRIPT,
+        params
+    }
+}
+
+export const deleteScript = params => {
+    return {
+        type: DELETE_SCRIPT,
         params
     }
 }

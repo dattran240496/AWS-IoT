@@ -8,44 +8,41 @@
 
 import React, {Component} from 'react';
 import {
-    NativeModules,
-    NativeEventEmitter,
-    DeviceEventEmitter,
-    FlatList,
-    Image,
-    AppState,
     AsyncStorage,
-    ScrollView,
-    TextInput,
-    Platform,
-    Text,
-    View,
-    TouchableOpacity,
-    Switch,
+    DeviceEventEmitter,
     Dimensions,
+    Image,
+    NativeEventEmitter,
+    NativeModules,
+    Platform,
+    ScrollView,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import styles from './styles'
-import {publish, subscribe, unsubscribe, onChangeStatus} from 'utils/mqttFunc';
+import {onChangeStatus, publish, subscribe, unsubscribe} from 'utils/mqttFunc';
 import {
-    updateDeviceStatus,
     updateAWSStatus,
-    updateSwitchDeviceStatus,
     updateDeviceMode,
-    updateScript
+    updateDeviceStatus,
+    updateScript,
+    updateSwitchDeviceStatus
 } from '../../actions/awsIoT'
 import {
-    allDevicesStatusOn,
+    allDevices,
     allDevicesStatusOff,
-    deviceSensorMode,
-    deviceElements,
+    allDevicesStatusOn,
     allRoom,
-    allDevices, deviceButtonMode
+    deviceButtonMode,
+    deviceElements,
+    deviceSensorMode
 } from '../../constants/devices';
-import Modal from "react-native-modal";
 import Button from "../Button";
 import {isInt, isJSON} from "../../constants/common";
 import {STATUS_TOPIC} from "../../constants/topics";
@@ -75,102 +72,29 @@ class CreateScript extends Component {
             isModal: false,
             allDevices: deviceElements,
             selectedDevice: [],
-            scriptName: ''
-        }
-        this.handleMessage = this.handleMessage.bind(this)
-    }
-
-    componentWillUnmount() {
-    }
-
-    componentWillUpdate(prevProps) {
-        if (prevProps.awsiot !== this.props.awsiot) {
-            if (prevProps.awsiot.connected) {
-                if (isIOS) {
-                    this.message = AWSMqttEvents.addListener("message", this.handleMessage);
-                } else {
-                    DeviceEventEmitter.addListener("Status", this.handleMqttStatusChange);
-                }
-            }
+            scriptName: '',
+            allDevicesStatusSelected: this.allDevicesStatusSelectedDefault()
         }
     }
 
-    componentDidMount() {
-        if (this.props.awsiot.connected) {
-            if (isIOS) {
-                this.message = AWSMqttEvents.addListener("message", this.handleMessage);
-            } else {
-                DeviceEventEmitter.addListener("Status", this.handleMqttStatusChange);
-            }
-        }
-    }
-
-    handleMessage = (message) => {
-        if (isJSON(message)) {
-            const data = JSON.parse(message);
-            if (data.eventType) {
-                if (data.eventType === "disconnected") {
-                    this.props.onUpdateSwitchDeviceStatus(false);
-                    this.props.onUpdateDeviceStatus({switch: -1})
-                } else if (data.eventType === "connected") {
-                    this.props.onUpdateSwitchDeviceStatus(true);
-                    publish(STATUS_TOPIC, "STATUS")
-                }
-            }
-        }
-        if (isInt(message)) {
-            const {deviceStatus, devicesMode} = this.props;
-            switch (message) {
-                case "ON":
-                    this.props.onUpdateDeviceStatus({switch: 0});
-                    break;
-                case "OFF":
-                    this.props.onUpdateDeviceStatus({switch: -1});
-                    break;
-                case "Device connected!":
-                    this.props.onUpdateSwitchDeviceStatus(true);
-                    break;
-                default:
-                    break
-            }
-            const newStatus = parseInt(message);
-            if (newStatus) {
-                const deviceStatusKeys = Object.keys(deviceStatus);
-                const changedDevice = _.find(deviceStatusKeys, key => {
-                    if (allDevicesStatusOff[newStatus]) {
-                        return deviceStatus[key] === newStatus - 1
-                    }
-                    if (allDevicesStatusOn[newStatus]) {
-                        return deviceStatus[key] === newStatus + 1
-                    }
-                });
-                const deviceModeKeys = Object.keys(devicesMode);
-                const changedMode = _.find(deviceModeKeys, key => {
-                    const deviceSensorModeIdx = deviceSensorMode[devicesMode[key]];
-                    if (deviceSensorModeIdx >= 0) {
-                        return devicesMode[key] === newStatus - 1
-                    }
-                    const deviceButtonModeIdx = deviceButtonMode[devicesMode[key]];
-                    if (deviceButtonModeIdx >= 0) {
-                        return devicesMode[key] === newStatus + 1
-                    }
-                })
-                if (changedDevice) {
-                    this.props.onUpdateDeviceStatus({
-                        [changedDevice]: newStatus
-                    })
-                }
-                if (changedMode) {
-                    this.props.onUpdateDeviceMode({
-                        [changedMode]: newStatus
-                    })
-                }
-            }
-        }
+    allDevicesStatusSelectedDefault = () => {
+        const data = JSON.parse(JSON.stringify(allDevices));
+        Object.keys(allDevices).forEach(item => {
+            data[item] = false
+        })
+        return data;
     }
 
     _closeModal = () => {
         this.props.onCloseModal()
+    }
+
+    onSetStatusChange = (status, deviceId) => {
+        const currentStatus = this.state.allDevicesStatusSelected;
+        currentStatus[deviceId] = status;
+        this.setState({
+            allDevicesStatusSelected: currentStatus
+        })
     }
 
     _createScript = async () => {
@@ -186,10 +110,15 @@ class CreateScript extends Component {
                     var script = {};
                 }
             }
-            const param = {[this.state.scriptName]: this.state.selectedDevice}
-            this.props.onUpdateScript(param)
+            const currentSelectedDevices = JSON.parse(JSON.stringify(this.state.selectedDevice))
+            this.state.selectedDevice.forEach((item, index) => {
+                currentSelectedDevices[index] = Object.assign({isOn: this.state.allDevicesStatusSelected[item.id]},
+                    currentSelectedDevices[index])
+            })
+            const param = {[this.state.scriptName]: currentSelectedDevices}
+            this.props.onUpdateScript(param);
             const newScript = Object.assign(param, script)
-            // await AsyncStorage.setItem('scriptList', JSON.stringify(newScript));
+            await AsyncStorage.setItem('scriptList', JSON.stringify(newScript));
             this.props.navigation.pop()
         } catch (error) {
             // Error retrieving data
@@ -199,6 +128,7 @@ class CreateScript extends Component {
 
     _renderDevice = (device, isDeleteItem = false, parent = null) => {
         const isChecked = _.find(this.state.selectedDevice, o => o.id === device.id)
+        const isSetOn = this.state.allDevicesStatusSelected[device.id]
         return (
             <View key={device.id} style={styles.deviceItem}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -209,83 +139,39 @@ class CreateScript extends Component {
                     />
                     <Text style={styles.itemName}>{device.name}</Text>
                 </View>
-                <TouchableOpacity
-                    style={styles.checkBox}
-                    onPress={() => {
-                        const currentSelectedDevices = this.state.selectedDevice;
-                        const currentAllDevices = this.state.allDevices;
-                        if (isChecked) {
-                            _.remove(currentSelectedDevices, o => o.id === device.id)
-                        } else {
-                            currentSelectedDevices.push(device)
-                        }
-
-                        this.setState({
-                            selectedDevice: currentSelectedDevices,
-                            allDevices: currentAllDevices
-                        })
-                    }}
-                >
-                    {isChecked &&
-                    <Image
-                        style={styles.iconCheck}
-                        source={require('assets/icons/check.png')}
-                        resizeMode={'contain'}
-                    />}
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    _renderSelectedDevices = (device, isDeleteItem = false, parent = null) => {
-        return (
-            <View key={device.id} style={styles.deviceItem}>
-                {isDeleteItem && (
+                <View style={styles.rightContent}>
+                    {
+                        isChecked &&
+                        <Switch value={isSetOn}
+                                onValueChange={status => {
+                                    this.onSetStatusChange(status, device.id)
+                                }}/>
+                    }
                     <TouchableOpacity
-                        style={styles.closeBtn}
+                        style={styles.checkBox}
                         onPress={() => {
-                            const currentAllDevices = this.state.allDevices;
                             const currentSelectedDevices = this.state.selectedDevice;
-                            _.remove(currentSelectedDevices, o => o.id === device.id);
-                            if (!currentAllDevices[device.roomId]) {
-                                currentAllDevices[device.roomId] = [];
+                            const currentAllDevices = this.state.allDevices;
+                            if (isChecked) {
+                                _.remove(currentSelectedDevices, o => o.id === device.id)
+                            } else {
+                                currentSelectedDevices.push(device)
                             }
-                            currentAllDevices[device.roomId].push({
-                                id: device.id,
-                                parentId: device.roomId
-                            });
+
                             this.setState({
                                 selectedDevice: currentSelectedDevices,
                                 allDevices: currentAllDevices
                             })
                         }}
                     >
-                        <Icon name='times-circle' color={'#e1e1e1'} size={24}/>
+                        {isChecked &&
+                        <Image
+                            style={styles.iconCheck}
+                            source={require('assets/icons/check.png')}
+                            resizeMode={'contain'}
+                        />}
                     </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                    style={styles.item}
-                    onPress={() => {
-                        // navigator.navigate("DeviceDetail", {
-                        //     deviceId: device.id
-                        // })
-                        if (!isDeleteItem) {
-                            const currentSelectedDevices = this.state.selectedDevice;
-                            const currentAllDevices = this.state.allDevices;
-                            _.remove(currentAllDevices[parent], o => o.id === device.id)
-                            currentSelectedDevices.push(device)
-                            this.setState({
-                                selectedDevice: currentSelectedDevices,
-                                allDevices: currentAllDevices
-                            })
-                        }
-
-
-                    }}
-                >
-                    <Image style={styles.image} source={device.image}/>
-                    <Text style={styles.itemName}>{device.name}</Text>
-                </TouchableOpacity>
+                </View>
             </View>
         )
     }
