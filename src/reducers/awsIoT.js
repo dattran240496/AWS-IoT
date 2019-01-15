@@ -5,7 +5,9 @@ import {
     UPDATE_SWITCH_DEVICE_STATUS,
     UPDATE_DEVICE_MODE,
     UPDATE_SCRIPT,
-    DELETE_SCRIPT
+    DELETE_SCRIPT,
+    UPDATE_HOME_STATUS,
+    UPDATE_SOS
 } from "../actions/type";
 import {
     deviceElements,
@@ -14,6 +16,7 @@ import {
     deviceTimer
 } from "../constants/devices";
 import _ from 'lodash'
+
 const initialState = {
     deviceStatus: deviceStatusDefault,
     devices: [],
@@ -21,7 +24,9 @@ const initialState = {
     switchStatus: false,
     devicesMode: devicesMode,
     deviceTimer: deviceTimer,
-    scriptList: {}
+    scriptList: {},
+    isHome: true,
+    isSOS: false,
 }
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -74,6 +79,16 @@ export default (state = initialState, action) => {
                 scriptList: currentScript
             }
         }
+        case UPDATE_HOME_STATUS:
+            return {
+                ...state,
+                isHome: action.params
+            }
+        case UPDATE_SOS:
+            return {
+                ...state,
+                isSOS: action.params
+            }
         default:
             return {
                 ...state

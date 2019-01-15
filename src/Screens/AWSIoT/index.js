@@ -22,9 +22,10 @@ import {
     Image,
     AppState,
     AsyncStorage,
-    ScrollView
+    ScrollView,
 } from "react-native";
 import {connect} from 'react-redux'
+import Modal from 'react-native-modalbox'
 import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import LinearGradient from 'react-native-linear-gradient';
 import Header from "../../components/Header";
@@ -34,7 +35,9 @@ import {
     updateAWSStatus,
     updateSwitchDeviceStatus,
     updateDeviceMode,
-    updateScript
+    updateScript,
+    updateHomeStatus,
+    updateSOS
 } from '../../actions/awsIoT'
 import {MESSAGE_TOPIC, DISCONNECT_TOPIC, STATUS_TOPIC, CONNECT_TOPIC} from '../../constants/topics'
 import {
@@ -47,6 +50,7 @@ import navigator from 'navigators/CustomNavigator'
 import styles from './styles'
 import {isInt, isJSON} from "../../constants/common";
 import _ from "lodash";
+import Button from "../../components/Button";
 
 const {IoTModule} = NativeModules;//For android
 const AWSMqttEvents = new NativeEventEmitter(NativeModules.AWSMqtt);//for ios
@@ -73,6 +77,7 @@ class AWSIoT extends Component {
             subscribe(DISCONNECT_TOPIC);
             subscribe(STATUS_TOPIC);
             publish(STATUS_TOPIC, "STATUS")
+            publish(MESSAGE_TOPIC, "100")
         }
     };
 
@@ -162,6 +167,18 @@ class AWSIoT extends Component {
             }
             const newStatus = parseInt(message);
             if (newStatus) {
+                if (!this.props.isHome && (Object.values(allDevicesStatusOn).findIndex(o => o == newStatus) >= 0
+                    || Object.values(allDevicesStatusOff).findIndex(o => o == newStatus) >= 0)) {
+                    this.props.onUpdateHomeStatus(true);
+                    return
+                }
+                if (newStatus == 35) {
+                    this.props.onUpdateSOS(true)
+                    return
+                } else if (newStatus == 36) {
+                    this.props.onUpdateSOS(false)
+                    return
+                }
                 const deviceStatusKeys = Object.keys(deviceStatus);
                 const changedDevice = _.find(deviceStatusKeys, key => {
                     if (allDevicesStatusOff[key] === newStatus) {
@@ -187,6 +204,7 @@ class AWSIoT extends Component {
                         [changedDevice]: newStatus
                     })
                 }
+
                 if (changedMode) {
                     this.props.onUpdateDeviceMode({
                         [changedMode]: newStatus
@@ -203,7 +221,7 @@ class AWSIoT extends Component {
     }
 
     _renderDevice = (data) => {
-        const {deviceStatus, devicesMode} = this.props;
+        const {deviceStatus, devicesMode, isHome} = this.props;
         const shadowOpt = {
             width: width / 2 - 20,
             height: width / 2 - 20,
@@ -228,7 +246,7 @@ class AWSIoT extends Component {
                     onPress={() => {
                         this._onPress(data.id)
                     }}
-                    //disabled={!(this.props.awsiot.connected)}
+                    disabled={!(this.props.awsiot.connected && isHome)}
                 >
                     <Image style={styles.image} source={data.image}/>
                     <Text style={styles.itemName}>{data.name}</Text>
@@ -239,9 +257,20 @@ class AWSIoT extends Component {
     }
 
     render() {
-        const {devices} = this.props;
+        const {devices, isHome} = this.props;
         let allDevices = 0;
         Object.values(deviceElements).forEach(item => allDevices += item.length);
+        if (!isHome) {
+            return (
+                <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+                    <Button
+                        title={'Retry'}
+                        buttonStyle={{width: 150, height: 50}}
+                        onPress={() => publish(MESSAGE_TOPIC, "100")}
+                    />
+                </View>
+            )
+        }
         return (
             <View style={styles.container}>
                 <Header title="My Home"
@@ -272,9 +301,34 @@ class AWSIoT extends Component {
                     />
                 </View>
                 {/*<CreateScript*/}
-                    {/*isOpen={this.state.isModal}*/}
-                    {/*onCloseModal={() => this._closeModal()}*/}
+                {/*isOpen={this.state.isModal}*/}
+                {/*onCloseModal={() => this._closeModal()}*/}
                 {/*/>*/}
+                <Modal
+                    style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: 300,
+                        height: 300
+                    }}
+                    position={"center"}
+                    isOpen={this.props.isSOS}
+                    backdropPressToClose={false}
+                >
+                    <View style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                        width: 250,
+                        height: 250
+                    }}>
+                        <Image
+                            style={{width: 150, height: 150}}
+                            source={require('assets/images/sos.png')}
+                            resizeMode='contain'
+                        />
+                    </View>
+                </Modal>
             </View>
         );
     }
@@ -286,6 +340,8 @@ const mapStateToProps = state => {
         devices: state.awsiot.devices,
         deviceStatus: state.awsiot.deviceStatus,
         devicesMode: state.awsiot.devicesMode,
+        isHome: state.awsiot.isHome,
+        isSOS: state.awsiot.isSOS,
     }
 }
 
@@ -294,7 +350,10 @@ const mapDispatchToProps = dispatch => ({
     onUpdateAWSStatus: params => dispatch(updateAWSStatus(params)),
     onUpdateSwitchDeviceStatus: params => dispatch(updateSwitchDeviceStatus(params)),
     onUpdateDeviceMode: params => dispatch(updateDeviceMode(params)),
-    onUpdateScript: params => dispatch(updateScript(params))
+    onUpdateScript: params => dispatch(updateScript(params)),
+    onUpdateHomeStatus: params => dispatch(updateHomeStatus(params)),
+    onUpdateSOS: params => dispatch(updateSOS(params)),
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AWSIoT)

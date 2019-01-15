@@ -27,6 +27,7 @@ export default class Button extends React.Component {
     render() {
         return (
             <TouchableOpacity
+                {...this.props}
                 onPress={() => this.props.onPress()}>
                 <LinearGradient
                     start={{x: 0, y: 0}}

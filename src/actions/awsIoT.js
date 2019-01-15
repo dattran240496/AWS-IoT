@@ -4,7 +4,8 @@ import {
     UPDATE_SWITCH_DEVICE_STATUS,
     UPDATE_DEVICE_MODE,
     UPDATE_SCRIPT,
-    DELETE_SCRIPT
+    DELETE_SCRIPT,
+    UPDATE_HOME_STATUS, UPDATE_SOS
 } from "./type";
 
 export const updateDeviceStatus = params => {
@@ -35,6 +36,13 @@ export const updateDeviceMode = params => {
     }
 }
 
+export const updateSOS = params => {
+    return {
+        type: UPDATE_SOS,
+        params
+    }
+}
+
 export const updateScript = params => {
     return {
         type: UPDATE_SCRIPT,
@@ -45,6 +53,13 @@ export const updateScript = params => {
 export const deleteScript = params => {
     return {
         type: DELETE_SCRIPT,
+        params
+    }
+}
+
+export const updateHomeStatus = params => {
+    return {
+        type: UPDATE_HOME_STATUS,
         params
     }
 }

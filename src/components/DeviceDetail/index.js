@@ -160,7 +160,7 @@ class DeviceDetail extends React.Component {
                 </View>
             )
         }
-        const {deviceStatus} = this.props;
+        const {deviceStatus, devicesMode} = this.props;
         let image = this.state.deviceDetail.image;
         const isDeviceOn = allDevicesStatusOn[this.state.deviceId] === deviceStatus[this.state.deviceId]
         if (this.state.deviceDetail.name.includes('Lamp')) {
@@ -168,6 +168,8 @@ class DeviceDetail extends React.Component {
                 image = this.state.deviceDetail.detailImageOn
             } else image = this.state.deviceDetail.detailImageOff
         }
+        const isDisable = deviceButtonMode[this.state.deviceId] === devicesMode[this.state.deviceId]
+        console.log('zzz isDisable', isDisable)
         return (
             <View style={styles.container}>
                 {this._renderHeader()}
@@ -177,6 +179,8 @@ class DeviceDetail extends React.Component {
                         {allRoom[this.state.deviceDetail.roomId].name} {this.state.deviceDetail.name}
                     </Text>
                     <Button
+                        key={devicesMode[this.state.deviceId]}
+                        disabled={isDisable}
                         colors={isDeviceOn ? null : ['#CACFD2', '#BDC3C7', '#909497']}
                         buttonStyle={isDeviceOn ? {} : {backgroundColor: '#e1e1e1'}}
                         title={isDeviceOn ? 'ON' : 'OFF'}
@@ -185,7 +189,10 @@ class DeviceDetail extends React.Component {
                         }}
                     />
                 </View>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity
+                    key={devicesMode[this.state.deviceId]}
+                    disabled={isDisable}
+                    onPress={() => {
                     onChangeStatus(this.state.deviceId, deviceStatus)
                 }}>
                     <Image style={styles.image} source={image} resizeMode='contain'/>
