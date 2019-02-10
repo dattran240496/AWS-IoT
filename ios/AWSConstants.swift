@@ -14,4 +14,4 @@ let CertificateSigningRequestCountryName = "Singapore"
 let CertificateSigningRequestOrganizationName = "Your Organization"
 let CertificateSigningRequestOrganizationalUnitName = "Your Organizational Unit"
 let PolicyName = "iotesp8266policy"
-let IOT_ENDPOINT = "a1h7ns6fsx2bpe-ats.iot.ap-southeast-1.amazonaws.com"//String
+let IOT_ENDPOINT = "https://a1h7ns6fsx2bpe-ats.iot.ap-southeast-1.amazonaws.com"//String

@@ -39,7 +39,7 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
     iotManager = AWSIoTManager.default()
     iot = AWSIoT.default()
     
-    AWSIoTDataManager.register(with: iotConfiguration!, forKey: "AWSIoTDataManager")
+    AWSIoTDataManager.register(with: iotDataConfiguration!, forKey: "AWSIoTDataManager")
   
     iotDataManager = AWSIoTDataManager(forKey: "AWSIoTDataManager")
   
@@ -79,6 +79,7 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
     {
       let defaults = UserDefaults.standard
       var certificateId = defaults.string( forKey: "certificateId")
+      print("cer Id: \(certificateId)")
     
       if (certificateId == nil)
       {
@@ -133,10 +134,10 @@ class AWSMqtt: RCTEventEmitter {//This class needs some features provided by rea
       else
       {
         let uuid = UUID().uuidString;
-        let certId = "cd2212a93a0feb5ef88fec2f055463c33d7a13886de1152f82d90fc659f3898b"
+        let certId = "56147b1665bea120d4b59967edacbe7a348d49e578193d4af30e00cf5f0f4ef1"
         DispatchQueue.main.async {
           // Connect to the AWS IoT service
-          self.iotDataManager.connect(withClientId: uuid, cleanSession:true, certificateId:certificateId!, statusCallback: mqttEventCallback)
+          self.iotDataManager.connect(withClientId: certId, cleanSession:true, certificateId:certificateId!, statusCallback: mqttEventCallback)
 
         }
       }

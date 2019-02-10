@@ -168,8 +168,10 @@ class DeviceDetail extends React.Component {
                 image = this.state.deviceDetail.detailImageOn
             } else image = this.state.deviceDetail.detailImageOff
         }
-        const isDisable = deviceButtonMode[this.state.deviceId] === devicesMode[this.state.deviceId]
-        console.log('zzz isDisable', isDisable)
+        let isDisable = false
+        if (deviceSensorMode[this.state.deviceId]) {
+            isDisable = deviceSensorMode[this.state.deviceId] === devicesMode[this.state.deviceId]
+        }
         return (
             <View style={styles.container}>
                 {this._renderHeader()}

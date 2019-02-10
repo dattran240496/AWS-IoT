@@ -40,7 +40,7 @@ export default class SmartConfig extends React.Component {
                 ssid: this.state.ssid,
                 bssid: this.state.bssid, //"" if not need to filter (don't use null)
                 password: this.state.password,
-                timeout: 50000 //now doesn't not effect
+                timeout: 30000 //now doesn't not effect
             }).then(function(results){
                 //Array of device success do smartconfig
                 console.log('rs', results);
@@ -52,7 +52,7 @@ export default class SmartConfig extends React.Component {
                 setTimeout(() => {
                     Smartconfig.stop();
                     this.setState({btnTitle: 'Connect'})
-                }, 5000);
+                }, 30000);
             })
         } else if (this.state.btnTitle === 'Cancel') {
             Smartconfig.stop();
