@@ -70,7 +70,8 @@ class AWSIoT extends Component {
     }
 
     handleMqttStatusChange = (params) => {
-        if (params.status === 2) {
+        console.log('zzz params', params)
+        if (params.status === 2 || params.status === "Connected") {
             this.props.onUpdateAWSStatus(true);
             subscribe(MESSAGE_TOPIC);
             subscribe(CONNECT_TOPIC);
@@ -100,7 +101,8 @@ class AWSIoT extends Component {
             if (isIOS) {
                 AWSMqttEvents.addListener("message", this.handleMessage);
             } else {
-                DeviceEventEmitter.addListener("Status", this.handleMqttStatusChange);
+                // DeviceEventEmitter.addListener("Status", this.handleMessage);
+                DeviceEventEmitter.addListener("subscribe", this.handleMessage);
             }
         }
         // if (!this.props.awsiot.connected) {
@@ -126,7 +128,7 @@ class AWSIoT extends Component {
                     NativeModules.AWSMqtt.connectToAWSMQTT();//implemented in AWSMqtt.swift
                 }, 1000);
             } else {
-                DeviceEventEmitter.addListener("subscribe", this.handleSubscribe);
+                DeviceEventEmitter.addListener("Status", this.handleMqttStatusChange);
                 setTimeout(() => {
                     IoTModule.initializeAWSMqtt();
                 }, 1500);
@@ -138,6 +140,7 @@ class AWSIoT extends Component {
     }
 
     handleMessage = (message) => {
+        if (!isIOS) message = message.message;
         if (isJSON(message)) {
             const data = JSON.parse(message);
             if (data.eventType) {

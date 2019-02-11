@@ -34,7 +34,7 @@ public class AwsIoTModule extends ReactContextBaseJavaModule {
     static final String LOG_TAG = "AwsIoT Module";
     // IoT endpoint
     // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com
-    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "a1h7ns6fsx2bpe-ats.iot.ap-southeast-1.amazonaws.com";//string
+    private static final String CUSTOMER_SPECIFIC_ENDPOINT = "https://a1h7ns6fsx2bpe-ats.iot.ap-southeast-1.amazonaws.com";//string
 
     // --- Constants to modify per your configuration ---
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with

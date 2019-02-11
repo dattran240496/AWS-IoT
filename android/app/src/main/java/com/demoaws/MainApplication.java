@@ -2,21 +2,18 @@ package com.demoaws;
 
 import android.app.Application;
 
-import com.facebook.react.ReactApplication;
-import com.horcrux.svg.SvgPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.reactlibrary.RNWifiPackage;
-import com.pusherman.networkinfo.RNNetworkInfoPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.tuanpm.RCTSmartconfig.RCTSmartconfigPackage;
-import com.pusherman.networkinfo.RNNetworkInfoPackage;
-import com.reactlibrary.RNWifiPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.horcrux.svg.SvgPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.pusherman.networkinfo.RNNetworkInfoPackage;
+import com.reactlibrary.RNWifiPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.tuanpm.RCTSmartconfig.RCTSmartconfigPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,10 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage(),
             new RNWifiPackage(),
             new RNNetworkInfoPackage(),
-            new RNGestureHandlerPackage(),
             new RCTSmartconfigPackage(),
-            new RNNetworkInfoPackage(),
-            new RNWifiPackage(),
             new RNGestureHandlerPackage(),
                     new AwsIoTPackage()
             );
